@@ -1,25 +1,12 @@
-
-body{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+.css-a198kx{
+    background-color: black;
+    width: 100%;
+    padding: 20px;
+    border-radius: 10px;
 }
-.calculator{
-  display: flex;
-  flex-direction: column;
-  max-width: 400px;
-}
-.result{
-  background-color: rgba(240, 255, 255, 0.069);
-}
-.buttons{
-  display: flex;
-  flex-wrap: wrap;
-}
-button{
-  flex: 1 1 20%;
-  padding: 20px;
-  background-color: rgb(126, 185, 187);
-  border: 1px solid;
+.css-ribjmf{
+    background-color: black !important ;
+    color: white;
+    font-size: 60px !important;
+    font-weight: 200;
 }
