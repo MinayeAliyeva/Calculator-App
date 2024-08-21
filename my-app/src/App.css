@@ -1,0 +1,19 @@
+
+body{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+.calculator{
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+}
+.result{
+  background-color: rgba(240, 255, 255, 0.069);
+}
+.buttons{
+  display: flex;
+  flex-wrap: wrap;
+}
