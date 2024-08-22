@@ -33,7 +33,6 @@ const Calculator = () => {
     const operators: string[] = [];
     const values: number[] = [];
     let num = "";
-
     const getPrecedence = (op: string) => {
       if (op === "+" || op === "-") return 1;
       if (op === "*" || op === "/") return 2;
