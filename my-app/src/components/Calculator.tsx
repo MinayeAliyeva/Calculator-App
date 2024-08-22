@@ -68,7 +68,13 @@ const Calculator = () => {
     }
   };
 
-  const handleSquareRootClick = () => {};
+  const handleSquareRootClick = () => {
+    try {
+      setDisplay((display) => String(Math.sqrt(parseFloat(display))));
+    } catch (error) {
+      setDisplay(`${error}`);
+    }
+  };
 
   const handleValueClick = (value: string) => {
     setDisplay((prev) => prev + value);
