@@ -60,7 +60,13 @@ const Calculator = () => {
     setDisplay("");
   };
 
-  const handlePercentageClick = () => {};
+  const handlePercentageClick = () => {
+    try {
+      setDisplay((display) => String(parseFloat(display) / 100));
+    } catch (error) {
+      setDisplay(`${error}`);
+    }
+  };
 
   const handleSquareRootClick = () => {};
 
