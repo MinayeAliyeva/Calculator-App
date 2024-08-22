@@ -25,3 +25,5 @@ To set up the project locally, follow these steps:
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/your-username/repo-name.git
+2. **Deployment link**:
+https://calculator-app-wine-two.vercel.app/
