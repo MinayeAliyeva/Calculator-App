@@ -1,23 +1,22 @@
 import * as React from "react";
 import { Button as BaseButton } from "@mui/base/Button";
 import { styled } from "@mui/system";
-import Stack from "@mui/material/Stack";
 
-export default function CalckBtn({content}:any) {
-  return (
-    <Stack spacing={2} direction="row">
-      <Button>{content}</Button>
-    </Stack>
-  );
+interface IBtn {
+  content: string;
+  onClick: () => void;
+}
+export default function CalcBtn({ content, onClick }: IBtn) {
+  return <Button onClick={onClick}>{content}</Button>;
 }
 
 const mustard = {
-  200: "#FFD966", 
+  200: "#FFD966",
   300: "#FFC933",
   400: "#FFB800",
-  500: "#E6A500", 
+  500: "#E6A500",
   600: "#CC9400",
-  700: "#B38300", 
+  700: "#B38300",
 };
 
 const grey = {
