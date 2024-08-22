@@ -4,21 +4,51 @@ import { Box } from "@mui/material";
 
 const Calculator = () => {
   const [display, setDisplay] = useState("");
+
   const applyOperator = (values: number[], operator: string) => {
     const b = values.pop();
     const a = values.pop();
     if (a === undefined || b === undefined) {
       throw new Error("Invalid expression");
     }
-    if (operator === "+") values.push(a + b);
-    if (operator === "-") values.push(a - b);
-    if (operator === "*") values.push(a * b);
-    if (operator === "/") values.push(a / b);
+    switch (operator) {
+      case "+":
+        values.push(a + b);
+        break;
+      case "-":
+        values.push(a - b);
+        break;
+      case "*":
+        values.push(a * b);
+        break;
+      case "/":
+        values.push(a / b);
+        break;
+      default:
+        throw new Error(`Unknown operator: ${operator}`);
+    }
   };
+
   const evaluateExpression = (expression: string) => {
     const operators: string[] = [];
     const values: number[] = [];
     let num = "";
+
+    const getPrecedence = (op: string) => {
+      if (op === "+" || op === "-") return 1;
+      if (op === "*" || op === "/") return 2;
+      return 0;
+    };
+
+    const applyOperatorWithPrecedence = (minPrecedence: number) => {
+      while (
+        operators.length &&
+        getPrecedence(operators[operators.length - 1]) >= minPrecedence
+      ) {
+        applyOperator(values, operators.pop()!);
+      }
+    };
+
     for (const char of expression) {
       if ("0123456789.".includes(char)) {
         num += char;
@@ -27,10 +57,19 @@ const Calculator = () => {
           values.push(parseFloat(num));
           num = "";
         }
-        if ("+-*/".includes(char)) {
-          while (operators.length) {
+        if (char === "(") {
+          operators.push(char);
+        } else if (char === ")") {
+          while (operators.length && operators[operators.length - 1] !== "(") {
+            applyOperatorWithPrecedence(1);
             applyOperator(values, operators.pop()!);
           }
+          operators.pop(); // Remove '('
+        } else if ("*/".includes(char)) {
+          applyOperatorWithPrecedence(2);
+          operators.push(char);
+        } else if ("+-".includes(char)) {
+          applyOperatorWithPrecedence(1);
           operators.push(char);
         }
       }
@@ -38,10 +77,8 @@ const Calculator = () => {
     if (num) {
       values.push(parseFloat(num));
     }
-    while (operators.length) {
-      applyOperator(values, operators.pop()!);
-    }
-    return values.pop();
+    applyOperatorWithPrecedence(1);
+    return values.pop()!;
   };
 
   const handleEqual = () => {
