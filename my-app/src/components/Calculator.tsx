@@ -44,15 +44,6 @@ const Calculator = () => {
     return values.pop();
   };
 
-  /*
-  12+5-6
-  num=12
-  values=[12,5]
-  operators=[+]
-  operator=-
-
-  */
-
   const handleEqual = () => {
     try {
       setDisplay(String(evaluateExpression(display)));
@@ -61,9 +52,13 @@ const Calculator = () => {
     }
   };
 
-  const handleClearClick = () => {};
+  const handleClearClick = () => {
+    setDisplay((prev) => prev?.slice(0, -1));
+  };
 
-  const handleAllClearClick = () => {};
+  const handleAllClearClick = () => {
+    setDisplay("");
+  };
 
   const handlePercentageClick = () => {};
 
