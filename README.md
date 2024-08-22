@@ -1,4 +1,4 @@
-# Calculator Application
+# Calculator App
 
 This project is a basic calculator application that supports fundamental mathematical operations. It is developed using React and MUI (Material-UI).
 
