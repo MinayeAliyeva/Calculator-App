@@ -35,9 +35,17 @@ const Calculator = () => {
     let num = "";
 
     const getPrecedence = (op: string) => {
-      if (op === "+" || op === "-") return 1;
-      if (op === "*" || op === "/") return 2;
-      return 0;
+      interface IOperators {
+        [key: string]: number;
+      }
+      const obj: IOperators = {
+        "+": 1,
+        "-": 1,
+        "*": 2,
+        "/": 2,
+      };
+
+      return obj?.[op];
     };
 
     const applyOperatorWithPrecedence = (minPrecedence: number) => {
