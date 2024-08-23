@@ -3,9 +3,11 @@ import CalcBtn from "./Button";
 import { Box } from "@mui/material";
 import { evaluateExpression } from "../helpers/evaluateExpression";
 import { useTheme } from "../context/ThemeContext";
+import { MdOutlineDarkMode } from "react-icons/md";
 const Calculator = () => {
   const [display, setDisplay] = useState("");
   const { isDarkMode, toggleTheme } = useTheme();
+
   const handleEqual = useCallback(() => {
     try {
       const returnStrFromEval = evaluateExpression(display)?.toString();
@@ -100,7 +102,32 @@ const Calculator = () => {
   ];
 
   return (
-    <Box className={isDarkMode ? 'dark-mode' : 'light-mode'} sx={{ width: 300, margin: "auto", paddingTop: 5 }}>
+<>
+<MdOutlineDarkMode
+    style={{
+      marginTop: "1rem",
+      backgroundColor: isDarkMode ? "#444" : "#ddd",
+      color: isDarkMode ? "#fff" : "#000",
+      border: "none",
+      padding: "8px 16px",
+      borderRadius: "4px",
+      cursor: "pointer",
+      transition: "background-color 0.3s ease, color 0.3s ease",
+      margin:"20px"
+    }}
+    onClick={toggleTheme}
+  />
+    <Box
+      sx={{
+        width: 300,
+        margin: "auto",
+        paddingTop: 5,
+        color: isDarkMode ? "#fff" : "#000",
+        borderRadius: 2,
+        transition:
+          "background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease",
+      }}
+    >
       <Box
         sx={{
           display: "grid",
@@ -111,12 +138,14 @@ const Calculator = () => {
         <Box
           sx={{
             gridColumn: "span 4",
-            backgroundColor: "grey.200",
+            backgroundColor: isDarkMode ? "#555" : "#ddd",
             padding: 2,
             textAlign: "right",
             fontSize: 24,
             borderRadius: 1,
             mb: 2,
+            transition: "background-color 0.3s ease",
+            
           }}
         >
           {display || "0"}
@@ -129,40 +158,8 @@ const Calculator = () => {
           />
         ))}
       </Box>
-      <button onClick={toggleTheme}>Toggle Theme</button>
-    </Box>
+    </Box></>
   );
 };
 
 export default Calculator;
-/*
-display=1+4
-expression="1+4"
-const operatos=[];
-const values=[];
-for 
-char=1
-if(true) num=1
-values=[]
-if(false) else==>>if(true)=>values=[1] num=""
-char=+ else if(true includes case)==> operators=[+]
-num=4;
-  if (num) {
-    values.push(parseFloat(num));
-  }
-    values=[1,4]
-    operators=[+]
-minPrecedence=1
-*/
-
-/*
-3*4+2
-num=3
-values=[3]
-operators=[*]
-values=[3,4]
-operators=[]
-values=[12]
-operators=[+]
-values=[12,2]
-*/
