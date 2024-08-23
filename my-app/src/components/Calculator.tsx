@@ -1,15 +1,12 @@
 import { useCallback, useState } from "react";
 import CalcBtn from "./Button";
 import { Box } from "@mui/material";
-import {
-  applyOperator,
-  evaluateExpression,
-} from "../helpers/evaluateExpression";
+import { evaluateExpression } from "../helpers/evaluateExpression";
 const Calculator = () => {
   const [display, setDisplay] = useState("");
   const handleEqual = useCallback(() => {
     try {
-      const returnStrFromEval = String(evaluateExpression(display));
+      const returnStrFromEval = evaluateExpression(display)?.toString();
       setDisplay(returnStrFromEval);
     } catch {
       setDisplay("Error");
@@ -135,3 +132,35 @@ const Calculator = () => {
 };
 
 export default Calculator;
+/*
+display=1+4
+expression="1+4"
+const operatos=[];
+const values=[];
+for 
+char=1
+if(true) num=1
+values=[]
+if(false) else==>>if(true)=>values=[1] num=""
+char=+ else if(true includes case)==> operators=[+]
+num=4;
+  if (num) {
+    values.push(parseFloat(num));
+  }
+    values=[1,4]
+    operators=[+]
+minPrecedence=1
+*/
+
+
+/*
+3*4+2
+num=3
+values=[3]
+operators=[*]
+values=[3,4]
+operators=[]
+values=[12]
+operators=[+]
+values=[12,2]
+*/
