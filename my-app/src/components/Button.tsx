@@ -1,11 +1,7 @@
-import * as React from "react";
 import { Button as BaseButton } from "@mui/base/Button";
 import { styled } from "@mui/system";
+import { IBtn } from "../types/interface";
 
-interface IBtn {
-  content: string;
-  onClick: () => void;
-}
 export default function CalcBtn({ content, onClick }: IBtn) {
   return <Button onClick={onClick}>{content}</Button>;
 }
