@@ -2,8 +2,10 @@ import { useCallback, useState } from "react";
 import CalcBtn from "./Button";
 import { Box } from "@mui/material";
 import { evaluateExpression } from "../helpers/evaluateExpression";
+import { useTheme } from "../context/ThemeContext";
 const Calculator = () => {
   const [display, setDisplay] = useState("");
+  const { isDarkMode, toggleTheme } = useTheme();
   const handleEqual = useCallback(() => {
     try {
       const returnStrFromEval = evaluateExpression(display)?.toString();
@@ -98,7 +100,7 @@ const Calculator = () => {
   ];
 
   return (
-    <Box sx={{ width: 300, margin: "auto", paddingTop: 5 }}>
+    <Box className={isDarkMode ? 'dark-mode' : 'light-mode'} sx={{ width: 300, margin: "auto", paddingTop: 5 }}>
       <Box
         sx={{
           display: "grid",
@@ -127,6 +129,7 @@ const Calculator = () => {
           />
         ))}
       </Box>
+      <button onClick={toggleTheme}>Toggle Theme</button>
     </Box>
   );
 };
@@ -151,7 +154,6 @@ num=4;
     operators=[+]
 minPrecedence=1
 */
-
 
 /*
 3*4+2
