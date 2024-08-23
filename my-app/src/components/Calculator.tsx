@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import CalcBtn from "./Button";
 import { Box } from "@mui/material";
 
 const Calculator = () => {
   const [display, setDisplay] = useState("");
 
-  const applyOperator = (values: number[], operator: string) => {
+  const applyOperator = useCallback((values: number[], operator: string) => {
     const b = values.pop();
     const a = values.pop();
     if (a === undefined || b === undefined) {
@@ -27,118 +27,124 @@ const Calculator = () => {
       default:
         throw new Error(`Unknown operator: ${operator}`);
     }
-  };
+  }, []);
 
-  const evaluateExpression = (expression: string) => {
-    const operators: string[] = [];
-    const values: number[] = [];
-    let num = "";
+  const evaluateExpression = useCallback(
+    (expression: string) => {
+      const operators: string[] = [];
+      const values: number[] = [];
+      let num = "";
+      const getPrecedence = (op: string) => {
+        if (op === "+" || op === "-") return 1;
+        if (op === "*" || op === "/") return 2;
+        return 0;
+      };
 
-    const getPrecedence = (op: string) => {
-      if (op === "+" || op === "-") return 1;
-      if (op === "*" || op === "/") return 2;
-      return 0;
-    };
-
-    const applyOperatorWithPrecedence = (minPrecedence: number) => {
-      while (
-        operators.length &&
-        getPrecedence(operators[operators.length - 1]) >= minPrecedence
-      ) {
-        applyOperator(values, operators.pop()!);
-      }
-    };
-
-    for (const char of expression) {
-      if ("0123456789.".includes(char)) {
-        num += char;
-      } else {
-        if (num) {
-          values.push(parseFloat(num));
-          num = "";
+      const applyOperatorWithPrecedence = (minPrecedence: number) => {
+        while (
+          operators.length &&
+          getPrecedence(operators[operators.length - 1]) >= minPrecedence
+        ) {
+          applyOperator(values, operators.pop()!);
         }
-        if (char === "(") {
-          operators.push(char);
-        } else if (char === ")") {
-          while (operators.length && operators[operators.length - 1] !== "(") {
-            applyOperatorWithPrecedence(1);
-            applyOperator(values, operators.pop()!);
+      };
+
+      for (const char of expression) {
+        const isChar = "0123456789.".includes(char);
+        if (isChar) {
+          num += char;
+        } else {
+          if (num) {
+            values.push(parseFloat(num));
+            num = "";
           }
-          operators.pop(); // Remove '('
-        } else if ("*/".includes(char)) {
-          applyOperatorWithPrecedence(2);
-          operators.push(char);
-        } else if ("+-".includes(char)) {
-          applyOperatorWithPrecedence(1);
-          operators.push(char);
+          if ("*/".includes(char)) {
+            applyOperatorWithPrecedence(2);
+            operators.push(char);
+          } else if ("+-".includes(char)) {
+            applyOperatorWithPrecedence(1);
+            operators.push(char);
+          }
         }
       }
-    }
-    if (num) {
-      values.push(parseFloat(num));
-    }
-    applyOperatorWithPrecedence(1);
-    return values.pop()!;
-  };
+      if (num) {
+        values.push(parseFloat(num));
+      }
+      applyOperatorWithPrecedence(1);
+      return values.pop()!;
+    },
+    [applyOperator]
+  );
 
-  const handleEqual = () => {
+  const handleEqual = useCallback(() => {
     try {
-      setDisplay(String(evaluateExpression(display)));
+      const returnStrFromEvaluate = evaluateExpression(display)?.toString();
+      setDisplay(returnStrFromEvaluate);
     } catch {
       setDisplay("Error");
     }
-  };
+  }, [display, evaluateExpression]);
 
-  const handleClearClick = () => {
+  const handleClearClick = useCallback(() => {
     setDisplay((prev) => prev?.slice(0, -1));
-  };
+  }, []);
 
-  const handleAllClearClick = () => {
+  const handleAllClearClick = useCallback(() => {
     setDisplay("");
-  };
+  }, []);
 
-  const handlePercentageClick = () => {
+  const handlePercentageClick = useCallback(() => {
     try {
       setDisplay((display) => String(parseFloat(display) / 100));
     } catch (error) {
       setDisplay(`${error}`);
     }
-  };
+  }, []);
 
-  const handleSquareRootClick = () => {
+  const handleSquareRootClick = useCallback(() => {
     try {
       setDisplay((display) => String(Math.sqrt(parseFloat(display))));
     } catch (error) {
       setDisplay(`${error}`);
     }
-  };
+  }, []);
 
-  const handleValueClick = (value: string) => {
+  const handleValueClick = useCallback((value: string) => {
     setDisplay((prev) => prev + value);
-  };
+  }, []);
 
-  const handleClick = (value: string) => {
-    switch (value) {
-      case "=":
-        handleEqual();
-        break;
-      case "C":
-        handleClearClick();
-        break;
-      case "AC":
-        handleAllClearClick();
-        break;
-      case "%":
-        handlePercentageClick();
-        break;
-      case "√":
-        handleSquareRootClick();
-        break;
-      default:
-        handleValueClick(value);
-        break;
-    }
-  };
+  const handleClick = useCallback(
+    (value: string) => {
+      switch (value) {
+        case "=":
+          handleEqual();
+          break;
+        case "C":
+          handleClearClick();
+          break;
+        case "AC":
+          handleAllClearClick();
+          break;
+        case "%":
+          handlePercentageClick();
+          break;
+        case "√":
+          handleSquareRootClick();
+          break;
+        default:
+          handleValueClick(value);
+          break;
+      }
+    },
+    [
+      handleEqual,
+      handleClearClick,
+      handleAllClearClick,
+      handlePercentageClick,
+      handleSquareRootClick,
+      handleValueClick,
+    ]
+  );
 
   const buttons = [
     "AC",
