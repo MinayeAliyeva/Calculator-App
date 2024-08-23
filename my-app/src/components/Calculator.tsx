@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import CalcBtn from "./Button";
-import { Box, Button, List, ListItem, Typography } from "@mui/material";
+import { Box, Button, List, ListItem } from "@mui/material";
 import { evaluateExpression } from "../helpers/evaluateExpression";
 import { useTheme } from "../context/ThemeContext";
 import { MdOutlineDarkMode } from "react-icons/md";
@@ -40,7 +40,7 @@ const Calculator = () => {
   const handlePercentageClick = useCallback(() => {
     try {
       const result = String(parseFloat(display) / 100);
-      addOperationToMemory(`${display} % = ${result}`); // İşlemi kaydet
+      addOperationToMemory(`${display} % = ${result}`); 
       setDisplay(result);
     } catch (error) {
       setDisplay(`${error}`);
@@ -50,7 +50,7 @@ const Calculator = () => {
   const handleSquareRootClick = useCallback(() => {
     try {
       const result = String(Math.sqrt(parseFloat(display)));
-      addOperationToMemory(`√${display} = ${result}`); // İşlemi kaydet
+      addOperationToMemory(`√${display} = ${result}`);
       setDisplay(result);
     } catch (error) {
       setDisplay(`${error}`);
@@ -61,7 +61,7 @@ const Calculator = () => {
     (exponent: number) => {
       try {
         const poweredNum = Math.pow(parseFloat(display), exponent)?.toString();
-        addOperationToMemory(`${display} ^ ${exponent} = ${poweredNum}`); // İşlemi kaydet
+        addOperationToMemory(`${display} ^ ${exponent} = ${poweredNum}`);
         setDisplay(poweredNum);
       } catch (error) {
         setDisplay(`${error}`);
