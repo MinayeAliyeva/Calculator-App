@@ -4,6 +4,7 @@ import { Box } from "@mui/material";
 import { evaluateExpression } from "../helpers/evaluateExpression";
 import { useTheme } from "../context/ThemeContext";
 import { MdOutlineDarkMode } from "react-icons/md";
+
 const Calculator = () => {
   const [display, setDisplay] = useState("");
   const { isDarkMode, toggleTheme } = useTheme();
@@ -41,6 +42,15 @@ const Calculator = () => {
     }
   }, []);
 
+  const handlePowClick = useCallback((exponent: number) => {
+    try {
+      const poweredNum = Math.pow(parseFloat(display), exponent)?.toString();
+      setDisplay(poweredNum);
+    } catch (error) {
+      setDisplay(`${error}`);
+    }
+  }, [display]);
+
   const handleValueClick = useCallback((value: string) => {
     setDisplay((prev) => prev + value);
   }, []);
@@ -63,6 +73,12 @@ const Calculator = () => {
         case "√":
           handleSquareRootClick();
           break;
+        case "^2":
+          handlePowClick(2);
+          break;
+        case "^3":
+          handlePowClick(3);
+          break;
         default:
           handleValueClick(value);
           break;
@@ -74,6 +90,7 @@ const Calculator = () => {
       handleAllClearClick,
       handlePercentageClick,
       handleSquareRootClick,
+      handlePowClick,
       handleValueClick,
     ]
   );
@@ -98,67 +115,67 @@ const Calculator = () => {
     "0",
     ".",
     "√",
+    "^2",
+    "^3",
     "=",
   ];
 
   return (
-<>
-<MdOutlineDarkMode
-    style={{
-      marginTop: "1rem",
-      backgroundColor: isDarkMode ? "#444" : "#ddd",
-      color: isDarkMode ? "#fff" : "#000",
-      border: "none",
-      padding: "8px 16px",
-      borderRadius: "4px",
-      cursor: "pointer",
-      transition: "background-color 0.3s ease, color 0.3s ease",
-      margin:"20px"
-    }}
-    onClick={toggleTheme}
-  />
-    <Box
-      sx={{
-        width: 300,
-        margin: "auto",
-        paddingTop: 5,
-        color: isDarkMode ? "#fff" : "#000",
-        borderRadius: 2,
-        transition:
-          "background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease",
-      }}
-    >
+    <>
+      <MdOutlineDarkMode
+        style={{
+          marginTop: "1rem",
+          backgroundColor: isDarkMode ? "#444" : "#ddd",
+          color: isDarkMode ? "#fff" : "#000",
+          border: "none",
+          padding: "8px 16px",
+          borderRadius: "4px",
+          cursor: "pointer",
+          transition: "background-color 0.3s ease, color 0.3s ease",
+          margin: "20px",
+        }}
+        onClick={toggleTheme}
+      />
       <Box
         sx={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: 1,
+          width: 300,
+          margin: "auto",
+          paddingTop: 5,
+          color: isDarkMode ? "#fff" : "#000",
+          borderRadius: 2,
         }}
       >
         <Box
           sx={{
-            gridColumn: "span 4",
-            backgroundColor: isDarkMode ? "#555" : "#ddd",
-            padding: 2,
-            textAlign: "right",
-            fontSize: 24,
-            borderRadius: 1,
-            mb: 2,
-            transition: "background-color 0.3s ease",
-            
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: 1,
           }}
         >
-          {display || "0"}
+          <Box
+            sx={{
+              gridColumn: "span 4",
+              backgroundColor: isDarkMode ? "#555" : "#ddd",
+              padding: 2,
+              textAlign: "right",
+              fontSize: 24,
+              borderRadius: 1,
+              mb: 2,
+              transition: "background-color 0.3s ease",
+            }}
+          >
+            {display || "0"}
+          </Box>
+          {buttons.map((value) => (
+            <CalcBtn
+              onClick={() => handleClick(value)}
+              key={value}
+              content={value}
+            />
+          ))}
         </Box>
-        {buttons.map((value) => (
-          <CalcBtn
-            onClick={() => handleClick(value)}
-            key={value}
-            content={value}
-          />
-        ))}
       </Box>
-    </Box></>
+    </>
   );
 };
 
