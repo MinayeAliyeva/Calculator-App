@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import CalcBtn from "./Button";
 import { Box } from "@mui/material";
 
@@ -89,75 +89,64 @@ const Calculator = () => {
     return values.pop()!;
   };
 
-  const handleEqual = useCallback(() => {
+  const handleEqual = () => {
     try {
-      const returnStrFromEval = String(evaluateExpression(display));
-      setDisplay(returnStrFromEval);
+      setDisplay(String(evaluateExpression(display)));
     } catch {
       setDisplay("Error");
     }
-  }, [display]);
+  };
 
-  const handleClearClick = useCallback(() => {
+  const handleClearClick = () => {
     setDisplay((prev) => prev?.slice(0, -1));
-  }, []);
+  };
 
-  const handleAllClearClick = useCallback(() => {
+  const handleAllClearClick = () => {
     setDisplay("");
-  }, []);
+  };
 
-  const handlePercentageClick = useCallback(() => {
+  const handlePercentageClick = () => {
     try {
       setDisplay((display) => String(parseFloat(display) / 100));
     } catch (error) {
       setDisplay(`${error}`);
     }
-  }, []);
+  };
 
-  const handleSquareRootClick = useCallback(() => {
+  const handleSquareRootClick = () => {
     try {
       setDisplay((display) => String(Math.sqrt(parseFloat(display))));
     } catch (error) {
       setDisplay(`${error}`);
     }
-  }, []);
+  };
 
-  const handleValueClick = useCallback((value: string) => {
+  const handleValueClick = (value: string) => {
     setDisplay((prev) => prev + value);
-  }, []);
+  };
 
-  const handleClick = useCallback(
-    (value: string) => {
-      switch (value) {
-        case "=":
-          handleEqual();
-          break;
-        case "C":
-          handleClearClick();
-          break;
-        case "AC":
-          handleAllClearClick();
-          break;
-        case "%":
-          handlePercentageClick();
-          break;
-        case "√":
-          handleSquareRootClick();
-          break;
-        default:
-          handleValueClick(value);
-          break;
-      }
-    },
-    [
-      handleEqual,
-      handleClearClick,
-      handleAllClearClick,
-      handlePercentageClick,
-      handleSquareRootClick,
-      handleValueClick,
-    ]
-  );
+  const handleClick = (value: string) => {
+    switch (value) {
+      case "=":
+        handleEqual();
+        break;
+      case "C":
+        handleClearClick();
+        break;
+      case "AC":
+        handleAllClearClick();
+        break;
+      case "%":
+        handlePercentageClick();
+        break;
+      case "√":
+        handleSquareRootClick();
+        break;
+      default:
+        handleValueClick(value);
+        break;
+    }
+  };
 
   const buttons = [
     "AC",
