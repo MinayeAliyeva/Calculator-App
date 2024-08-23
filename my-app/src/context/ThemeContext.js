@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext } from "react";
+import { unstable_isGlobalState } from "@mui/base";
+import React, { createContext, useContext, useState } from "react";
 
 const ThemeContext = createContext();
 
