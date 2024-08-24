@@ -3,9 +3,9 @@ import CalcBtn from "./Button";
 import { Box, Button, List, ListItem } from "@mui/material";
 import { evaluateExpression } from "../helpers/evaluateExpression";
 import { useTheme } from "../context/ThemeContext";
-import { MdOutlineDarkMode } from "react-icons/md";
 import ThemeToggle from "./ThemeToogle";
 import Display from "./Display";
+import { buttons } from "../constants/constands";
 
 const Calculator = () => {
   const [display, setDisplay] = useState("");
@@ -113,30 +113,7 @@ const Calculator = () => {
     ]
   );
 
-  const buttons = [
-    "AC",
-    "C",
-    "%",
-    "/",
-    "7",
-    "8",
-    "9",
-    "*",
-    "4",
-    "5",
-    "6",
-    "-",
-    "1",
-    "2",
-    "3",
-    "+",
-    "0",
-    ".",
-    "√",
-    "^2",
-    "^3",
-    "=",
-  ];
+
 
   return (
     <>
@@ -158,7 +135,7 @@ const Calculator = () => {
           }}
         >
           <Display display={display} isDarkMode={isDarkMode} />
-          {buttons.map((value) => (
+          {buttons?.map((value) => (
             <CalcBtn
               onClick={() => handleClick(value)}
               key={value}
