@@ -4,24 +4,23 @@ import { Box, Button, List, ListItem } from "@mui/material";
 import { evaluateExpression } from "../helpers/evaluateExpression";
 import { useTheme } from "../context/ThemeContext";
 import { MdOutlineDarkMode } from "react-icons/md";
+import ThemeToggle from "./ThemeToogle";
+import Display from "./Display";
 
 const Calculator = () => {
   const [display, setDisplay] = useState("");
-  const [operations, setOperations] = useState<string[]>([]); 
+  const [operations, setOperations] = useState<string[]>([]);
   const { isDarkMode, toggleTheme } = useTheme();
-  const [showMemory, setShowMemory] = useState(false); 
+  const [showMemory, setShowMemory] = useState(false);
 
-  const addOperationToMemory = useCallback(
-    (operation: string) => {
-      setOperations((prevOps) => [...prevOps, operation]);
-    },
-    []
-  );
+  const addOperationToMemory = useCallback((operation: string) => {
+    setOperations((prevOps) => [...prevOps, operation]);
+  }, []);
 
   const handleEqual = useCallback(() => {
     try {
-      const returnStrFromEval = evaluateExpression(display)?.toString();
-      addOperationToMemory(`${display} = ${returnStrFromEval}`); 
+      const returnStrFromEval = evaluateExpression?.(display)?.toString(); //16
+      addOperationToMemory(`${display} = ${returnStrFromEval}`);
       setDisplay(returnStrFromEval);
     } catch {
       setDisplay("Error");
@@ -34,13 +33,13 @@ const Calculator = () => {
 
   const handleAllClearClick = useCallback(() => {
     setDisplay("");
-    setOperations([]); 
+    setOperations([]);
   }, []);
 
   const handlePercentageClick = useCallback(() => {
     try {
       const result = String(parseFloat(display) / 100);
-      addOperationToMemory(`${display} % = ${result}`); 
+      addOperationToMemory(`${display} % = ${result}`);
       setDisplay(result);
     } catch (error) {
       setDisplay(`${error}`);
@@ -141,20 +140,7 @@ const Calculator = () => {
 
   return (
     <>
-      <MdOutlineDarkMode
-        style={{
-          marginTop: "1rem",
-          backgroundColor: isDarkMode ? "#444" : "#ddd",
-          color: isDarkMode ? "#fff" : "#000",
-          border: "none",
-          padding: "8px 16px",
-          borderRadius: "4px",
-          cursor: "pointer",
-          transition: "background-color 0.3s ease, color 0.3s ease",
-          margin: "20px",
-        }}
-        onClick={toggleTheme}
-      />
+      <ThemeToggle />
       <Box
         sx={{
           width: 300,
@@ -171,20 +157,7 @@ const Calculator = () => {
             gap: 1,
           }}
         >
-          <Box
-            sx={{
-              gridColumn: "span 4",
-              backgroundColor: isDarkMode ? "#555" : "#ddd",
-              padding: 2,
-              textAlign: "right",
-              fontSize: 24,
-              borderRadius: 1,
-              mb: 2,
-              transition: "background-color 0.3s ease",
-            }}
-          >
-            {display || "0"}
-          </Box>
+          <Display display={display} isDarkMode={isDarkMode} />
           {buttons.map((value) => (
             <CalcBtn
               onClick={() => handleClick(value)}
@@ -207,7 +180,7 @@ const Calculator = () => {
               backgroundColor: isDarkMode ? "#333" : "#fff",
               borderRadius: 2,
               padding: 2,
-              color: isDarkMode ? "#fff" : "#000", 
+              color: isDarkMode ? "#fff" : "#000",
             }}
           >
             {operations.map((operation, index) => (
@@ -216,9 +189,7 @@ const Calculator = () => {
           </List>
         )}
       </Box>
-      <Box style={{height:"100vh"}}>
-
-      </Box>
+      <Box style={{ height: "100vh" }}></Box>
     </>
   );
 };

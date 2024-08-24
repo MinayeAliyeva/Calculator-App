@@ -1,0 +1,11 @@
+3*4+2
+num=3
+values=[3]
+operators=["*"]
+num=4
+values=[3,4]
+operators=[]
+values=[12]
+operators=["+]
+values=[12,2]
+values=[16]
