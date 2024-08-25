@@ -5,7 +5,12 @@ import { evaluateExpression } from "../helpers/evaluateExpression";
 import { useTheme } from "../context/ThemeContext";
 import ThemeToggle from "./ThemeToogle";
 import Display from "./Display";
-import { buttons } from "../constants/constands";
+import {
+  boxSxStyle,
+  boxSxStyleDarkMood,
+  boxSxStyleLightMood,
+  buttons,
+} from "../constants/constands";
 
 const Calculator = () => {
   const [display, setDisplay] = useState("");
@@ -113,8 +118,6 @@ const Calculator = () => {
     ]
   );
 
-
-
   return (
     <>
       <ThemeToggle />
@@ -127,13 +130,7 @@ const Calculator = () => {
           borderRadius: 2,
         }}
       >
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: 1,
-          }}
-        >
+        <Box sx={isDarkMode ? boxSxStyleDarkMood :boxSxStyleLightMood }>
           <Display display={display} isDarkMode={isDarkMode} />
           {buttons?.map((value) => (
             <CalcBtn
@@ -166,7 +163,6 @@ const Calculator = () => {
           </List>
         )}
       </Box>
-      <Box style={{ height: "100vh" }}></Box>
     </>
   );
 };
