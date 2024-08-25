@@ -22,6 +22,7 @@ export const buttons = [
   "^3",
   "=",
 ];
+export const operators = ["+", "-", "*", "/"];
 export const boxSxStyle = {
   display: "grid",
   gridTemplateColumns: "repeat(4, 1fr)",

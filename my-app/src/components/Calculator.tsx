@@ -6,16 +6,16 @@ import { useTheme } from "../context/ThemeContext";
 import ThemeToggle from "./ThemeToogle";
 import Display from "./Display";
 import {
-  boxSxStyle,
   boxSxStyleDarkMood,
   boxSxStyleLightMood,
   buttons,
+  operators,
 } from "../constants/constands";
 
 const Calculator = () => {
   const [display, setDisplay] = useState("");
   const [operations, setOperations] = useState<string[]>([]);
-  const { isDarkMode, toggleTheme } = useTheme();
+  const { isDarkMode } = useTheme();
   const [showMemory, setShowMemory] = useState(false);
 
   const addOperationToMemory = useCallback((operation: string) => {
@@ -75,7 +75,12 @@ const Calculator = () => {
   );
 
   const handleValueClick = useCallback((value: string) => {
-    setDisplay((prev) => prev + value);
+    setDisplay((prev) => {
+      if (operators.includes(value) && operators.includes(prev.slice(-1))) {
+        return prev.slice(0, -1) + value;
+      }
+      return prev + value;
+    });
   }, []);
 
   const handleClick = useCallback(
@@ -130,7 +135,7 @@ const Calculator = () => {
           borderRadius: 2,
         }}
       >
-        <Box sx={isDarkMode ? boxSxStyleDarkMood :boxSxStyleLightMood }>
+        <Box sx={isDarkMode ? boxSxStyleDarkMood : boxSxStyleLightMood}>
           <Display display={display} isDarkMode={isDarkMode} />
           {buttons?.map((value) => (
             <CalcBtn
