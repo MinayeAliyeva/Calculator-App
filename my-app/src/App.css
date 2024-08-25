@@ -1,12 +1,12 @@
-.css-a198kx{
-    background-color: black;
-    width: 100%;
-    padding: 20px;
-    border-radius: 10px;
+.App {
+  min-height: 100vh;
 }
-.css-ribjmf{
-    background-color: black !important ;
-    color: white;
-    font-size: 60px !important;
-    font-weight: 200;
+.light-mode {
+  background-color: white;
+  color: black;
+}
+
+.dark-mode {
+  background-color: black;
+  color: white;
 }

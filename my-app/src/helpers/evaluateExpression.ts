@@ -50,7 +50,10 @@ export const evaluateExpression = (expression: string) => {
     }
   };
 
-  for (const char of expression) {
+  for (let i = 0; i < expression.length; i++) {
+    const char = expression[i];
+    console.log("char",char);
+    
     if ("0123456789.".includes(char)) {
       num += char;
     } else {
@@ -67,10 +70,7 @@ export const evaluateExpression = (expression: string) => {
       if (char === "-") {
         if (
           num === "" &&
-          (operators.length === 0 ||
-            "+-*/".includes(
-              expression.charAt(values.length + operators.length - 1)
-            ))
+          (i === 0 || "+-*/".includes(expression[i - 1]))
         ) {
           isNegative = true;
         } else {
@@ -80,12 +80,13 @@ export const evaluateExpression = (expression: string) => {
       } else if ("*/".includes(char)) {
         applyOperatorWithPrecedence(2);
         operators.push(char);
-      } else if ("+-".includes(char)) {
+      } else if ("+".includes(char)) {
         applyOperatorWithPrecedence(1);
         operators.push(char);
       }
     }
   }
+
   if (num) {
     if (isNegative) {
       values.push(-parseFloat(num));
