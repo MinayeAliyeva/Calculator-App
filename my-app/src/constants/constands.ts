@@ -20,6 +20,8 @@ export const buttons = [
   "√",
   "^2",
   "^3",
+  "(",
+  ")",
   "=",
 ];
 export const operators = ["+", "-", "*", "/"];

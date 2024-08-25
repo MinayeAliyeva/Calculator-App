@@ -1,28 +1,17 @@
-
 import { Toperations, TOperators } from "../types/interface";
 
-
 export const applyOperator = (values: number[], operator: string) => {
-  const b = values.pop();
-  const a = values.pop();
-  if (!a || !b) {
-    throw new Error("Invalid expression");
-  }
+  const b = values.pop()!;
+  const a = values.pop()!;
 
-  const operations:Toperations = {
-
+  const operations: Toperations = {
     "+": (a, b) => a + b,
     "-": (a, b) => a - b,
     "*": (a, b) => a * b,
     "/": (a, b) => a / b,
   };
 
-  const operation = operations[operator];
-  if (!operation) {
-    throw new Error(`Unknown operator: ${operator}`);
-  }
-
-  values.push(operation(a, b));
+  values.push(operations[operator](a, b));
 };
 
 export const evaluateExpression = (expression: string) => {
@@ -31,45 +20,29 @@ export const evaluateExpression = (expression: string) => {
   let num = "";
   let isNegative = false;
 
-  const getPrecedence = (op: string) => {
-    const precedence: TOperators = {
-      "+": 1,
-      "-": 1,
-      "*": 2,
-      "/": 2,
-    };
+  const precedence: TOperators = { "+": 1, "-": 1, "*": 2, "/": 2 };
 
-
-    return precedence[op];
-
-  };
   const applyOperatorWithPrecedence = (minPrecedence: number) => {
     while (
       operators.length &&
-      getPrecedence(operators[operators.length - 1]) >= minPrecedence
+      precedence[operators[operators.length - 1]] >= minPrecedence
     ) {
       applyOperator(values, operators.pop()!);
     }
   };
+
   for (let i = 0; i < expression.length; i++) {
     const char = expression[i];
-
-
     if ("0123456789.".includes(char)) {
       num += char;
     } else {
       if (num) {
-        if (isNegative) {
-          values.push(-parseFloat(num));
-        } else {
-          values.push(parseFloat(num));
-        }
+        values.push(isNegative ? -parseFloat(num) : parseFloat(num));
         num = "";
         isNegative = false;
       }
-
       if (char === "-") {
-        if (num === "" && (i === 0 || "+-*/".includes(expression[i - 1]))) {
+        if (i === 0 || "+-*/(".includes(expression[i - 1])) {
           isNegative = true;
         } else {
           applyOperatorWithPrecedence(1);
@@ -81,17 +54,22 @@ export const evaluateExpression = (expression: string) => {
       } else if ("+".includes(char)) {
         applyOperatorWithPrecedence(1);
         operators.push(char);
+      } else if (char === "(") {
+        operators.push(char);
+      } else if (char === ")") {
+        while (operators[operators.length - 1] !== "(") {
+          applyOperator(values, operators.pop()!);
+        }
+        operators.pop();
       }
     }
   }
 
   if (num) {
-    if (isNegative) {
-      values.push(-parseFloat(num));
-    } else {
-      values.push(parseFloat(num));
-    }
+    values.push(isNegative ? -parseFloat(num) : parseFloat(num));
   }
+
   applyOperatorWithPrecedence(1);
+
   return values.pop()!;
 };
