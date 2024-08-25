@@ -13,6 +13,7 @@ export interface IMemory {
   isDarkMode: boolean;
 }
 
+export type HandlerKey = "=" | "C" | "AC" | "%" | "√" | "^2" | "^3";
 
 
 
