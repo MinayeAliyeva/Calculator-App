@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useMemo } from "react";
 import CalcBtn from "./Button";
 import { Box, Button, List, ListItem } from "@mui/material";
 import { evaluateExpression } from "../helpers/evaluateExpression";
@@ -11,6 +11,7 @@ import {
   buttons,
   operators,
 } from "../constants/constands";
+import { HandlerKey, THandlers } from "../types/interface";
 
 const Calculator = () => {
   const [display, setDisplay] = useState("");
@@ -24,7 +25,7 @@ const Calculator = () => {
 
   const handleEqual = useCallback(() => {
     try {
-      const returnStrFromEval = evaluateExpression?.(display)?.toString(); //16
+      const returnStrFromEval = evaluateExpression?.(display)?.toString();
       addOperationToMemory(`${display} = ${returnStrFromEval}`);
       setDisplay(returnStrFromEval);
     } catch {
@@ -43,7 +44,7 @@ const Calculator = () => {
 
   const handlePercentageClick = useCallback(() => {
     try {
-      const result = String(parseFloat(display) / 100);
+      const result = (parseFloat(display) / 100).toString();
       addOperationToMemory(`${display} % = ${result}`);
       setDisplay(result);
     } catch (error) {
@@ -53,7 +54,7 @@ const Calculator = () => {
 
   const handleSquareRootClick = useCallback(() => {
     try {
-      const result = String(Math.sqrt(parseFloat(display)));
+      const result = (Math.sqrt(parseFloat(display))).toString();
       addOperationToMemory(`√${display} = ${result}`);
       setDisplay(result);
     } catch (error) {
@@ -76,42 +77,24 @@ const Calculator = () => {
 
   const handleValueClick = useCallback((value: string) => {
     setDisplay((prev) => {
-      if (operators.includes(value) && operators.includes(prev.slice(-1))) {
+      const prevOperation = prev.slice(-1);
+      if (operators.includes(value) && operators.includes(prevOperation)) {
         return prev.slice(0, -1) + value;
       }
       return prev + value;
     });
   }, []);
 
-  const handleClick = useCallback(
-    (value: string) => {
-      switch (value) {
-        case "=":
-          handleEqual();
-          break;
-        case "C":
-          handleClearClick();
-          break;
-        case "AC":
-          handleAllClearClick();
-          break;
-        case "%":
-          handlePercentageClick();
-          break;
-        case "√":
-          handleSquareRootClick();
-          break;
-        case "^2":
-          handlePowClick(2);
-          break;
-        case "^3":
-          handlePowClick(3);
-          break;
-        default:
-          handleValueClick(value);
-          break;
-      }
-    },
+  const handlers: THandlers = useMemo(
+    () => ({
+      "=": handleEqual,
+      C: handleClearClick,
+      AC: handleAllClearClick,
+      "%": handlePercentageClick,
+      "√": handleSquareRootClick,
+      "^2": () => handlePowClick(2),
+      "^3": () => handlePowClick(3),
+    }),
     [
       handleEqual,
       handleClearClick,
@@ -119,8 +102,18 @@ const Calculator = () => {
       handlePercentageClick,
       handleSquareRootClick,
       handlePowClick,
-      handleValueClick,
     ]
+  );
+
+  const handleClick = useCallback(
+    (value: string) => {
+      if (handlers[value as HandlerKey]) {
+        handlers[value as HandlerKey]();
+      } else {
+        handleValueClick(value);
+      }
+    },
+    [handlers, handleValueClick]
   );
 
   return (

@@ -1,27 +1,25 @@
-import { IOperators } from "../types/interface";
+import { IOperators, TOperations } from "../types/interface";
 
 export const applyOperator = (values: number[], operator: string) => {
   const b = values.pop();
   const a = values.pop();
-  if (a === undefined || b === undefined) {
+  if (!a || !b) {
     throw new Error("Invalid expression");
   }
-  switch (operator) {
-    case "+":
-      values.push(a + b);
-      break;
-    case "-":
-      values.push(a - b);
-      break;
-    case "*":
-      values.push(a * b);
-      break;
-    case "/":
-      values.push(a / b);
-      break;
-    default:
-      throw new Error(`Unknown operator: ${operator}`);
+
+  const operations: TOperations = {
+    "+": (a, b) => a + b,
+    "-": (a, b) => a - b,
+    "*": (a, b) => a * b,
+    "/": (a, b) => a / b,
+  };
+
+  const operation = operations[operator];
+  if (!operation) {
+    throw new Error(`Unknown operator: ${operator}`);
   }
+
+  values.push(operation(a, b));
 };
 
 export const evaluateExpression = (expression: string) => {
@@ -38,7 +36,7 @@ export const evaluateExpression = (expression: string) => {
       "/": 2,
     };
 
-    return obj?.[op];
+    return obj[op];
   };
 
   const applyOperatorWithPrecedence = (minPrecedence: number) => {
@@ -52,8 +50,8 @@ export const evaluateExpression = (expression: string) => {
 
   for (let i = 0; i < expression.length; i++) {
     const char = expression[i];
-    console.log("char",char);
-    
+    console.log("char", char);
+
     if ("0123456789.".includes(char)) {
       num += char;
     } else {
@@ -68,10 +66,7 @@ export const evaluateExpression = (expression: string) => {
       }
 
       if (char === "-") {
-        if (
-          num === "" &&
-          (i === 0 || "+-*/".includes(expression[i - 1]))
-        ) {
+        if (num === "" && (i === 0 || "+-*/".includes(expression[i - 1]))) {
           isNegative = true;
         } else {
           applyOperatorWithPrecedence(1);
