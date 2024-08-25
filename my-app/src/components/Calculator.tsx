@@ -1,10 +1,11 @@
 import { useCallback, useState, useMemo } from "react";
 import CalcBtn from "./Button";
-import { Box, Button, List, ListItem } from "@mui/material";
+import { Box, Button, List, ListItem, Typography } from "@mui/material";
 import { evaluateExpression } from "../helpers/evaluateExpression";
 import { useTheme } from "../context/ThemeContext";
 import ThemeToggle from "./ThemeToogle";
 import Display from "./Display";
+import HistoryIcon from "@mui/icons-material/History";
 import {
   boxSxStyleDarkMood,
   boxSxStyleLightMood,
@@ -12,6 +13,7 @@ import {
   operators,
 } from "../constants/constands";
 import { HandlerKey, THandlers } from "../types/interface";
+import { cursorTo } from "readline";
 
 const Calculator = () => {
   const [display, setDisplay] = useState("");
@@ -54,7 +56,7 @@ const Calculator = () => {
 
   const handleSquareRootClick = useCallback(() => {
     try {
-      const result = (Math.sqrt(parseFloat(display))).toString();
+      const result = Math.sqrt(parseFloat(display)).toString();
       addOperationToMemory(`√${display} = ${result}`);
       setDisplay(result);
     } catch (error) {
@@ -79,7 +81,6 @@ const Calculator = () => {
     setDisplay((prev) => {
       const prevOperator = prev.slice(-1);
       if (operators.includes(value) && operators.includes(prevOperator)) {
-
         return prev.slice(0, -1) + value;
       }
       return prev + value;
@@ -139,13 +140,15 @@ const Calculator = () => {
             />
           ))}
         </Box>
-        <Button
+        <Box
+          style={{ cursor: "pointer" }}
           onClick={() => setShowMemory(!showMemory)}
-          variant="contained"
-          sx={{ mt: 2, bgcolor: isDarkMode ? "#666" : "#ccc" }}
+          sx={{ display: "flex" }}
         >
-          Memory
-        </Button>
+          <HistoryIcon  />
+          <Typography>View previous actions</Typography>
+        </Box>
+
         {showMemory && (
           <List
             sx={{
