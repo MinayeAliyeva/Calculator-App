@@ -1,25 +1,34 @@
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo, useEffect } from "react";
 import CalcBtn from "./Button";
-import { Box, Button, List, ListItem, Typography } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  List,
+  ListItem,
+  Modal,
+  Typography,
+} from "@mui/material";
 import { evaluateExpression } from "../helpers/evaluateExpression";
 import { useTheme } from "../context/ThemeContext";
 import ThemeToggle from "./ThemeToogle";
 import Display from "./Display";
 import HistoryIcon from "@mui/icons-material/History";
+import DeleteIcon from "@mui/icons-material/Delete";
+
+import { HandlerKey, THandlers } from "../types/interface";
 import {
   boxSxStyleDarkMood,
   boxSxStyleLightMood,
   buttons,
+  modalStyle,
   operators,
 } from "../constants/constands";
-import { HandlerKey, THandlers } from "../types/interface";
-import { cursorTo } from "readline";
 
 const Calculator = () => {
   const [display, setDisplay] = useState("");
   const [operations, setOperations] = useState<string[]>([]);
   const { isDarkMode } = useTheme();
-  const [showMemory, setShowMemory] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const addOperationToMemory = useCallback((operation: string) => {
     setOperations((prevOps) => [...prevOps, operation]);
@@ -41,7 +50,7 @@ const Calculator = () => {
 
   const handleAllClearClick = useCallback(() => {
     setDisplay("");
-    setOperations([]);
+    setOperations([]); // Clear operations here if desired
   }, []);
 
   const handlePercentageClick = useCallback(() => {
@@ -118,6 +127,14 @@ const Calculator = () => {
     [handlers, handleValueClick]
   );
 
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const deleteInsideModal = () => {
+    setOperations([]);
+  };
+
+  const isButtonDisabled = operations.length === 0;
+
   return (
     <>
       <ThemeToggle />
@@ -132,7 +149,7 @@ const Calculator = () => {
       >
         <Box sx={isDarkMode ? boxSxStyleDarkMood : boxSxStyleLightMood}>
           <Display display={display} isDarkMode={isDarkMode} />
-          {buttons?.map((value) => (
+          {buttons?.map((value: string) => (
             <CalcBtn
               onClick={() => handleClick(value)}
               key={value}
@@ -142,28 +159,69 @@ const Calculator = () => {
         </Box>
         <Box
           style={{ cursor: "pointer" }}
-          onClick={() => setShowMemory(!showMemory)}
+          onClick={handleOpen}
           sx={{ display: "flex" }}
         >
-          <HistoryIcon  />
+          <HistoryIcon />
           <Typography>View previous actions</Typography>
         </Box>
 
-        {showMemory && (
-          <List
-            sx={{
-              mt: 2,
-              backgroundColor: isDarkMode ? "#333" : "#fff",
-              borderRadius: 2,
-              padding: 2,
-              color: isDarkMode ? "#fff" : "#000",
-            }}
-          >
-            {operations.map((operation, index) => (
-              <ListItem key={index}>{operation}</ListItem>
-            ))}
-          </List>
-        )}
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={modalStyle}>
+            <h1 style={{ fontSize: "15px" }}>Memory</h1>
+            {operations.length > 0 ? (
+              <List
+                sx={{
+                  mt: 2,
+                  backgroundColor: isDarkMode ? "#222" : "#f9f9f9",
+                  borderRadius: 2,
+                  padding: 2,
+                  color: isDarkMode ? "#e0e0e0" : "#333",
+                  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                {operations.map((operation, index) => (
+                  <ListItem
+                    key={index}
+                    sx={{
+                      borderRadius: 1,
+                      padding: "8px 12px",
+                      marginBottom: "8px",
+                      backgroundColor: isDarkMode ? "#444" : "#fff",
+                      transition: "background-color 0.3s ease",
+                      "&:hover": {
+                        backgroundColor: isDarkMode ? "#555" : "#eaeaea",
+                      },
+                    }}
+                  >
+                    {operation}
+                  </ListItem>
+                ))}
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Typography sx={{ fontSize: "13px" }}>
+                    Clear All Memory
+                  </Typography>
+
+                  <IconButton
+                    onClick={deleteInsideModal}
+                    aria-label="delete"
+                    disabled={isButtonDisabled}
+                    style={{ color: "#E6A500" }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              </List>
+            ) : (
+              <Typography>No previous operations</Typography>
+            )}
+          </Box>
+        </Modal>
       </Box>
     </>
   );
