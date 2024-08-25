@@ -12,7 +12,11 @@ export interface IMemory {
   operations: string[];
   isDarkMode: boolean;
 }
-export type HandlerKey = "=" | "C" | "AC" | "%" | "√" | "^2" | "^3";
+
+
+
+
 export type THandlers=Record<HandlerKey, () => void>
 export type TOperators=Record<string,number>
 export type Toperations=Record<string, (a: number, b: number) => number> 
+

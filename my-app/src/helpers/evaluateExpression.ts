@@ -1,12 +1,16 @@
+
 import { Toperations, TOperators } from "../types/interface";
+
 
 export const applyOperator = (values: number[], operator: string) => {
   const b = values.pop();
   const a = values.pop();
-  if (a === undefined || b === undefined) {
+  if (!a || !b) {
     throw new Error("Invalid expression");
   }
+
   const operations:Toperations = {
+
     "+": (a, b) => a + b,
     "-": (a, b) => a - b,
     "*": (a, b) => a * b,
@@ -35,7 +39,9 @@ export const evaluateExpression = (expression: string) => {
       "/": 2,
     };
 
+
     return precedence[op];
+
   };
   const applyOperatorWithPrecedence = (minPrecedence: number) => {
     while (
@@ -47,6 +53,8 @@ export const evaluateExpression = (expression: string) => {
   };
   for (let i = 0; i < expression.length; i++) {
     const char = expression[i];
+
+
     if ("0123456789.".includes(char)) {
       num += char;
     } else {

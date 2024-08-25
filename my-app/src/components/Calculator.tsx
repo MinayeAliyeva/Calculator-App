@@ -79,6 +79,7 @@ const Calculator = () => {
     setDisplay((prev) => {
       const prevOperator = prev.slice(-1);
       if (operators.includes(value) && operators.includes(prevOperator)) {
+
         return prev.slice(0, -1) + value;
       }
       return prev + value;
