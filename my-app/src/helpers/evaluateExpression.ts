@@ -1,26 +1,29 @@
-import { Toperations, TOperators } from "../types/interface";
-
-export const applyOperator = (values: number[], operator: string) => {
-  const b = values.pop()!;
-  const a = values.pop()!;
-
-  const operations: Toperations = {
-    "+": (a, b) => a + b,
-    "-": (a, b) => a - b,
-    "*": (a, b) => a * b,
-    "/": (a, b) => a / b,
-  };
-
-  values.push(operations[operator](a, b));
-};
-
-export const evaluateExpression = (expression: string) => {
+export const evaluateExpression = (expression: string): number => {
   const operators: string[] = [];
   const values: number[] = [];
   let num = "";
   let isNegative = false;
 
-  const precedence: TOperators = { "+": 1, "-": 1, "*": 2, "/": 2 };
+  const precedence: { [key: string]: number } = {
+    "+": 1,
+    "-": 1,
+    "*": 2,
+    "/": 2,
+  };
+
+  const applyOperator = (values: number[], operator: string) => {
+    const b = values.pop()!;
+    const a = values.pop()!;
+
+    const operations: { [key: string]: (a: number, b: number) => number } = {
+      "+": (a, b) => a + b,
+      "-": (a, b) => a - b,
+      "*": (a, b) => a * b,
+      "/": (a, b) => a / b,
+    };
+
+    values.push(operations[operator](a, b));
+  };
 
   const applyOperatorWithPrecedence = (minPrecedence: number) => {
     while (
@@ -30,14 +33,12 @@ export const evaluateExpression = (expression: string) => {
       applyOperator(values, operators.pop()!);
     }
   };
-  // 0 / -0
+
   for (let i = 0; i < expression.length; i++) {
     const char = expression[i];
+
     if ("0123456789.".includes(char)) {
       num += char;
-      if (values.length && num === "0") {
-        return new Error();
-      }
     } else {
       if (num) {
         values.push(isNegative ? -parseFloat(num) : parseFloat(num));
@@ -74,5 +75,7 @@ export const evaluateExpression = (expression: string) => {
 
   applyOperatorWithPrecedence(1);
 
-  return values.pop()!;
+  // Yuvarlama
+  const result = values.pop()!;
+  return Math.round(result * 1e10) / 1e10;
 };
