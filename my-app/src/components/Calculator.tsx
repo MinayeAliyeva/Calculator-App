@@ -22,6 +22,7 @@ import {
   modalStyle,
   operators,
 } from "../constants/constands";
+import ThemeToggle from "./ThemeToogle";
 
 const Calculator = () => {
   const [display, setDisplay] = useState("");
@@ -32,7 +33,6 @@ const Calculator = () => {
   const addOperationToMemory = useCallback((operation: string) => {
     setOperations((prevOps) => [...prevOps, operation]);
   }, []);
-
   const handleEqual = useCallback(() => {
     try {
       const returnStrFromEval = evaluateExpression?.(display)?.toString();
@@ -42,7 +42,7 @@ const Calculator = () => {
       setDisplay("Error");
     }
   }, [display, addOperationToMemory]);
-
+  
   const handleClearClick = useCallback(() => {
     setDisplay((prev) => prev?.slice(0, -1));
   }, []);
@@ -84,24 +84,45 @@ const Calculator = () => {
     },
     [display, addOperationToMemory]
   );
-
   const handleValueClick = useCallback((value: string) => {
     setDisplay((prev) => {
       const prevOperator = prev.slice(-1);
+      const lastOperatorIndex = Math.max(prev.lastIndexOf('+'), prev.lastIndexOf('-'), prev.lastIndexOf('*'), prev.lastIndexOf('/'));
+      const lastNumber = prev.slice(lastOperatorIndex + 1);
+      if (value === "0") {
+        // Eğer önceki değer "0" veya "." ve bir sayı girilmeye başlanmışsa, sadece "0" göster
+        if (prev === "0" || (prev.includes(".") && prev.split(".")[1] === "")) {
+          return prev;
+        }
+        // Eğer ekran "0" ise ve yeni bir operatör girilirse, "0" ekleyin
+        if (operators.includes(prevOperator)) {
+          return prev + value;
+        }
+      }
+      if (value === ".") {
+        // Ekranın mevcut değeri boşsa veya sadece "0" ise "0." olarak güncelle
+        if (prev === "" || prev === "0") {
+       
+          return "0.";
+        }
+        // Eğer ekranın mevcut değeri zaten bir ondalık noktasına sahipse, tekrar ekleme
+        if (lastNumber.includes(".")) {
+          return prev;
+        }
+      }
+      // Eğer ekran "0" ve yeni bir sayı giriliyorsa, "0" yerine yeni değeri koy
+      if (prev === "0" && !operators.includes(value) && value !== ".") {
+        return value;
+      }
+      // Eğer ekranın son karakteri operatörse ve yeni bir operatör eklenirse, önceki operatörü değiştir
       if (operators.includes(value) && operators.includes(prevOperator)) {
         return prev.slice(0, -1) + value;
       }
-      //5+=
-  
-      console.log("prev", prev); //5+=
-      console.log("value", value);//=
-      if (operators.includes(prevOperator) && value === "=") {
-        console.log("girdi");
-      }
+      // Diğer durumlarda değeri ekle
       return prev + value;
     });
-  }, []);
-
+  }, [operators]);
+  
   const handlers: THandlers = useMemo(
     () => ({
       "=": handleEqual,
@@ -143,7 +164,7 @@ const Calculator = () => {
 
   return (
     <>
-      {/* <ThemeToggle /> */}
+      <ThemeToggle />
       <Box
         sx={{
           width: 300,
