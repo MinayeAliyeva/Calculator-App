@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo, useEffect } from "react";
+import { useCallback, useState, useMemo } from "react";
 import CalcBtn from "./Button";
 import {
   Box,
@@ -25,7 +25,7 @@ import {
 import ThemeToggle from "./ThemeToogle";
 
 const Calculator = () => {
-  const [display, setDisplay] = useState("");
+  const [display, setDisplay] = useState("0");
   const [operations, setOperations] = useState<string[]>([]);
   const { isDarkMode } = useTheme();
   const [open, setOpen] = useState(false);
@@ -33,18 +33,9 @@ const Calculator = () => {
   const addOperationToMemory = useCallback((operation: string) => {
     setOperations((prevOps) => [...prevOps, operation]);
   }, []);
-  const handleEqual = useCallback(() => {
-    try {
-      const returnStrFromEval = evaluateExpression?.(display)?.toString();
-      addOperationToMemory(`${display} = ${returnStrFromEval}`);
-      setDisplay(returnStrFromEval);
-    } catch {
-      setDisplay("Error");
-    }
-  }, [display, addOperationToMemory]);
-  
+
   const handleClearClick = useCallback(() => {
-    setDisplay((prev) => prev?.slice(0, -1));
+    setDisplay((prev) => prev.slice(0, -1));
   }, []);
 
   const handleAllClearClick = useCallback(() => {
@@ -58,7 +49,7 @@ const Calculator = () => {
       addOperationToMemory(`${display} % = ${result}`);
       setDisplay(result);
     } catch (error) {
-      setDisplay(`${error}`);
+      setDisplay("Hata");
     }
   }, [display, addOperationToMemory]);
 
@@ -68,61 +59,92 @@ const Calculator = () => {
       addOperationToMemory(`√${display} = ${result}`);
       setDisplay(result);
     } catch (error) {
-      setDisplay(`${error}`);
+      setDisplay("Hata");
     }
   }, [display, addOperationToMemory]);
 
   const handlePowClick = useCallback(
     (exponent: number) => {
       try {
-        const poweredNum = Math.pow(parseFloat(display), exponent)?.toString();
-        addOperationToMemory(`${display} ^ ${exponent} = ${poweredNum}`);
-        setDisplay(poweredNum);
+        // if (!display) {
+        //   setDisplay("");
+        // }
+        const base = parseFloat(display);
+        const poweredNum = Math.pow(base, exponent);
+        const result = poweredNum.toString();
+        addOperationToMemory(`${display} ^ ${exponent} = ${result}`);
+        setDisplay(result);
       } catch (error) {
-        setDisplay(`${error}`);
+        setDisplay("Hata");
       }
     },
     [display, addOperationToMemory]
   );
+
   const handleValueClick = useCallback((value: string) => {
     setDisplay((prev) => {
-      const prevOperator = prev.slice(-1);
-      const lastOperatorIndex = Math.max(prev.lastIndexOf('+'), prev.lastIndexOf('-'), prev.lastIndexOf('*'), prev.lastIndexOf('/'));
-      const lastNumber = prev.slice(lastOperatorIndex + 1);
-      if (value === "0") {
-        // Eğer önceki değer "0" veya "." ve bir sayı girilmeye başlanmışsa, sadece "0" göster
-        if (prev === "0" || (prev.includes(".") && prev.split(".")[1] === "")) {
-          return prev;
-        }
-        // Eğer ekran "0" ise ve yeni bir operatör girilirse, "0" ekleyin
-        if (operators.includes(prevOperator)) {
-          return prev + value;
-        }
+      const lastOperatorIndex = Math.max(
+        prev.lastIndexOf("+"),
+        prev.lastIndexOf("-"),
+        prev.lastIndexOf("*"),
+        prev.lastIndexOf("/")
+      );
+      // console.log("prev", prev);
+      // console.log("value", value);
+
+      const lastNumber = prev.slice(lastOperatorIndex + 1); //+
+      // eger operator gelerse ve evvelki deyer sifir yada " " olarsa sifiri qoru
+      if (operators?.includes(value) && (prev === "" || prev === "0")) {
+        return `0${value}`;
       }
-      if (value === ".") {
-        // Ekranın mevcut değeri boşsa veya sadece "0" ise "0." olarak güncelle
-        if (prev === "" || prev === "0") {
-       
-          return "0.";
-        }
-        // Eğer ekranın mevcut değeri zaten bir ondalık noktasına sahipse, tekrar ekleme
-        if (lastNumber.includes(".")) {
-          return prev;
-        }
-      }
-      // Eğer ekran "0" ve yeni bir sayı giriliyorsa, "0" yerine yeni değeri koy
+      // Eğer 0-in uzerine gelen deyerdise ve . deyilse sifiri degisdir bu rakamla
       if (prev === "0" && !operators.includes(value) && value !== ".") {
         return value;
       }
-      // Eğer ekranın son karakteri operatörse ve yeni bir operatör eklenirse, önceki operatörü değiştir
-      if (operators.includes(value) && operators.includes(prevOperator)) {
+      // Eğer `value` "." ise ve önceki değer "" veya "0" ise, "0." ekle
+      if (value === ".") {
+        if (prev === "" || prev === "0") {
+          return "0.";
+        }
+        if (lastNumber.includes(".")) {
+          return prev; // Eğer son rakamda zaten "." varsa değiştirme
+        }
+      }
+      // Eğer işlem operatörü ekleniyorsa ve önceki karakter işlem operatörü ise, sonuncusunu değiştir
+      if (operators?.includes(value) && operators.includes(prev.slice(-1))) {
         return prev.slice(0, -1) + value;
       }
-      // Diğer durumlarda değeri ekle
+      // Eğer başında "." varsa, "0" ekleyin
+      if (
+        value === "." &&
+        (prev === "" || operators.includes(prev.slice(-1)))
+      ) {
+        return prev + "0.";
+      }
+
       return prev + value;
     });
-  }, [operators]);
-  
+  }, []);
+
+  const handleEqual = useCallback(() => {
+    try {
+      if (display.includes("/0")) {
+        setDisplay("Hata");
+        return;
+      }
+
+      const result = evaluateExpression(display);
+      if (isNaN(result) || !isFinite(result)) {
+        setDisplay("Hata");
+      } else {
+        addOperationToMemory(`${display} = ${result}`);
+        setDisplay(result.toString());
+      }
+    } catch {
+      setDisplay("Hata");
+    }
+  }, [display, addOperationToMemory]);
+
   const handlers: THandlers = useMemo(
     () => ({
       "=": handleEqual,
