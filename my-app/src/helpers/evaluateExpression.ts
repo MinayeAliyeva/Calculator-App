@@ -30,11 +30,14 @@ export const evaluateExpression = (expression: string) => {
       applyOperator(values, operators.pop()!);
     }
   };
-
+  // 0 / -0
   for (let i = 0; i < expression.length; i++) {
     const char = expression[i];
     if ("0123456789.".includes(char)) {
       num += char;
+      if (values.length && num === "0") {
+        return new Error();
+      }
     } else {
       if (num) {
         values.push(isNegative ? -parseFloat(num) : parseFloat(num));

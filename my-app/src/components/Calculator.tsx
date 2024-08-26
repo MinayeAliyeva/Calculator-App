@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { evaluateExpression } from "../helpers/evaluateExpression";
 import { useTheme } from "../context/ThemeContext";
-import ThemeToggle from "./ThemeToogle";
 import Display from "./Display";
 import HistoryIcon from "@mui/icons-material/History";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -50,7 +49,7 @@ const Calculator = () => {
 
   const handleAllClearClick = useCallback(() => {
     setDisplay("");
-    setOperations([]); // Clear operations here if desired
+    setOperations([]);
   }, []);
 
   const handlePercentageClick = useCallback(() => {
@@ -91,6 +90,13 @@ const Calculator = () => {
       const prevOperator = prev.slice(-1);
       if (operators.includes(value) && operators.includes(prevOperator)) {
         return prev.slice(0, -1) + value;
+      }
+      //5+=
+  
+      console.log("prev", prev); //5+=
+      console.log("value", value);//=
+      if (operators.includes(prevOperator) && value === "=") {
+        console.log("girdi");
       }
       return prev + value;
     });
@@ -137,7 +143,7 @@ const Calculator = () => {
 
   return (
     <>
-      <ThemeToggle />
+      {/* <ThemeToggle /> */}
       <Box
         sx={{
           width: 300,
