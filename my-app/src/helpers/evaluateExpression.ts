@@ -19,7 +19,12 @@ export const evaluateExpression = (expression: string): number => {
       "+": (a, b) => a + b,
       "-": (a, b) => a - b,
       "*": (a, b) => a * b,
-      "/": (a, b) => a / b,
+      "/": (a, b) => {
+        if (b === 0) {
+          throw new Error("Sıfıra bölme hatası");
+        }
+        return a / b;
+      },
     };
 
     values.push(operations[operator](a, b));
@@ -72,10 +77,11 @@ export const evaluateExpression = (expression: string): number => {
   if (num) {
     values.push(isNegative ? -parseFloat(num) : parseFloat(num));
   }
-
   applyOperatorWithPrecedence(1);
 
-  // Yuvarlama
   const result = values.pop()!;
-  return Math.round(result * 1e10) / 1e10;
+  if (isNaN(result) || !isFinite(result)) {
+    throw new Error("Geçersiz sonuç");
+  }
+  return Math.round(result * 1e10) / 1e10; //1usdu10
 };
