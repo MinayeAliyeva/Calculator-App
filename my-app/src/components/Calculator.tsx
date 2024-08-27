@@ -1,40 +1,35 @@
-import { useCallback, useState, useMemo } from "react";
-import CalcBtn from "./Button";
-import { Box, Button, List, ListItem } from "@mui/material";
-import { evaluateExpression } from "../helpers/evaluateExpression";
+import { useCallback, useMemo, useState } from "react";
+import {
+  Box,
+  IconButton,
+  Drawer,
+} from "@mui/material";
 import { useTheme } from "../context/ThemeContext";
-import ThemeToggle from "./ThemeToogle";
 import Display from "./Display";
+import CalcBtn from "./Button";
+import ThemeToggle from "./ThemeToogle";
+import { evaluateExpression } from "../helpers/evaluateExpression";
+import { HandlerKey, THandlers } from "../types/interface";
 import {
   boxSxStyleDarkMood,
   boxSxStyleLightMood,
   buttons,
   operators,
 } from "../constants/constands";
-import { HandlerKey, THandlers } from "../types/interface";
+import Memory from "./Memory";
 
 const Calculator = () => {
-  const [display, setDisplay] = useState("");
+  const [display, setDisplay] = useState("0");
   const [operations, setOperations] = useState<string[]>([]);
   const { isDarkMode } = useTheme();
-  const [showMemory, setShowMemory] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const addOperationToMemory = useCallback((operation: string) => {
     setOperations((prevOps) => [...prevOps, operation]);
   }, []);
 
-  const handleEqual = useCallback(() => {
-    try {
-      const returnStrFromEval = evaluateExpression?.(display)?.toString();
-      addOperationToMemory(`${display} = ${returnStrFromEval}`);
-      setDisplay(returnStrFromEval);
-    } catch {
-      setDisplay("Error");
-    }
-  }, [display, addOperationToMemory]);
-
   const handleClearClick = useCallback(() => {
-    setDisplay((prev) => prev?.slice(0, -1));
+    setDisplay((prev) => prev.slice(0, -1));
   }, []);
 
   const handleAllClearClick = useCallback(() => {
@@ -48,28 +43,38 @@ const Calculator = () => {
       addOperationToMemory(`${display} % = ${result}`);
       setDisplay(result);
     } catch (error) {
-      setDisplay(`${error}`);
+      setDisplay("Error");
     }
   }, [display, addOperationToMemory]);
 
   const handleSquareRootClick = useCallback(() => {
     try {
-      const result = (Math.sqrt(parseFloat(display))).toString();
+      if (!display) {
+        setDisplay("0");
+        return;
+      }
+      const result = Math.sqrt(parseFloat(display)).toString();
       addOperationToMemory(`√${display} = ${result}`);
       setDisplay(result);
     } catch (error) {
-      setDisplay(`${error}`);
+      setDisplay("Error");
     }
   }, [display, addOperationToMemory]);
 
   const handlePowClick = useCallback(
     (exponent: number) => {
       try {
-        const poweredNum = Math.pow(parseFloat(display), exponent)?.toString();
-        addOperationToMemory(`${display} ^ ${exponent} = ${poweredNum}`);
-        setDisplay(poweredNum);
+        if (!display) {
+          setDisplay("0");
+          return;
+        }
+        const base = parseFloat(display);
+        const poweredNum = Math.pow(base, exponent);
+        const result = poweredNum.toString();
+        addOperationToMemory(`${display} ^ ${exponent} = ${result}`);
+        setDisplay(result);
       } catch (error) {
-        setDisplay(`${error}`);
+        setDisplay("Error");
       }
     },
     [display, addOperationToMemory]
@@ -77,14 +82,64 @@ const Calculator = () => {
 
   const handleValueClick = useCallback((value: string) => {
     setDisplay((prev) => {
-      const prevOperator = prev.slice(-1);
-      if (operators.includes(value) && operators.includes(prevOperator)) {
+      const lastOperatorIndex = Math.max(
+        prev.lastIndexOf("+"),
+        prev.lastIndexOf("-"),
+        prev.lastIndexOf("*"),
+        prev.lastIndexOf("/")
+      );
 
+      const lastNumber = prev.slice(lastOperatorIndex + 1);
+
+      if ((prev.slice(0, 1) === "0" || !prev) && value === "-") {
+        return value;
+      }
+      if (operators?.includes(value) && (prev === "" || prev === "0")) {
+        return `0${value}`;
+      }
+      if (prev === "0" && !operators.includes(value) && value !== ".") {
+        return value;
+      }
+      if (value === ".") {
+        if (prev === "" || prev === "0") {
+          return "0.";
+        }
+        if (lastNumber.includes(".")) {
+          return prev;
+        }
+      }
+      if (operators?.includes(value) && operators.includes(prev.slice(-1))) {
         return prev.slice(0, -1) + value;
       }
+      if (
+        value === "." &&
+        (prev === "" || operators.includes(prev.slice(-1)))
+      ) {
+        return prev + "0.";
+      }
+
       return prev + value;
     });
   }, []);
+
+  const handleEqual = useCallback(() => {
+    try {
+      if (display.includes("/0")) {
+        setDisplay("Error");
+        return;
+      }
+
+      const result = evaluateExpression(display);
+      if (isNaN(result) || !isFinite(result)) {
+        setDisplay("Error");
+      } else {
+        addOperationToMemory(`${display} = ${result}`);
+        setDisplay(result.toString());
+      }
+    } catch {
+      setDisplay("Error");
+    }
+  }, [display, addOperationToMemory]);
 
   const handlers: THandlers = useMemo(
     () => ({
@@ -117,21 +172,32 @@ const Calculator = () => {
     [handlers, handleValueClick]
   );
 
+  const handleDrawerOpen = () => setDrawerOpen(true);
+  const handleDrawerClose = () => setDrawerOpen(false);
+
+  const counOfMemort = operations?.length;
+
   return (
     <>
       <ThemeToggle />
       <Box
         sx={{
-          width: 300,
+          width: 400,
           margin: "auto",
           paddingTop: 5,
           color: isDarkMode ? "#fff" : "#000",
           borderRadius: 2,
+          position: "relative",
         }}
       >
         <Box sx={isDarkMode ? boxSxStyleDarkMood : boxSxStyleLightMood}>
-          <Display display={display} isDarkMode={isDarkMode} />
-          {buttons?.map((value) => (
+          <Display
+            display={display}
+            isDarkMode={isDarkMode}
+            onHistoryClick={handleDrawerOpen}
+            counOfMemory={counOfMemort}
+          />
+          {buttons?.map((value: string) => (
             <CalcBtn
               onClick={() => handleClick(value)}
               key={value}
@@ -139,28 +205,40 @@ const Calculator = () => {
             />
           ))}
         </Box>
-        <Button
-          onClick={() => setShowMemory(!showMemory)}
-          variant="contained"
-          sx={{ mt: 2, bgcolor: isDarkMode ? "#666" : "#ccc" }}
+        <Drawer
+          anchor="bottom"
+          open={drawerOpen}
+          onClose={handleDrawerClose}
+          sx={{
+            position: "fixed",
+            bottom: 0,
+            width: "450px",
+            zIndex: 1300,
+            "& .MuiDrawer-paper": {
+              width: "100%",
+              maxWidth: "460px",
+              borderTopLeftRadius: "8px",
+              borderTopRightRadius: "8px",
+              marginLeft: "520px",
+            },
+          }}
         >
-          Memory
-        </Button>
-        {showMemory && (
-          <List
+          <Memory counOfMemort={counOfMemort}  operations={operations} setOperations={setOperations} />
+          <Box
             sx={{
-              mt: 2,
-              backgroundColor: isDarkMode ? "#333" : "#fff",
-              borderRadius: 2,
-              padding: 2,
-              color: isDarkMode ? "#fff" : "#000",
+              display: "flex",
+              justifyContent: "center",
+              p: 2,
+              backgroundColor: isDarkMode ? "#222" : "#f9f9f9",
             }}
           >
-            {operations.map((operation, index) => (
-              <ListItem key={index}>{operation}</ListItem>
-            ))}
-          </List>
-        )}
+            <IconButton
+              aria-label="history"
+              color="primary"
+              onClick={handleDrawerOpen}
+            ></IconButton>
+          </Box>
+        </Drawer>
       </Box>
     </>
   );

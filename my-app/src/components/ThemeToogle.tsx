@@ -9,7 +9,7 @@ const ThemeToggle = () => {
     <MdOutlineDarkMode
       style={{
         marginTop: "1rem",
-        backgroundColor: isDarkMode ? "#444" : "#ddd",
+    
         color: isDarkMode ? "#fff" : "#000",
         border: "none",
         padding: "8px 16px",

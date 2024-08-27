@@ -20,9 +20,11 @@ export const buttons = [
   "√",
   "^2",
   "^3",
+  "(",
+  ")",
   "=",
 ];
-export const operators = ["+", "-", "*", "/"];
+export const operators = ["+", "-", "*", "/","="];
 export const boxSxStyle = {
   display: "grid",
   gridTemplateColumns: "repeat(4, 1fr)",
@@ -39,4 +41,27 @@ export const boxSxStyleDarkMood = {
 export const boxSxStyleLightMood = {
   ...boxSxStyle,
   backgroundColor: "#000",
+};
+
+export const modalStyle = {
+  position: "absolute",
+  top: "15%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  borderRadius:"5px",
+  boxShadow: 24,
+  p: 4,
+  
+};
+export const drawerStyle = {
+  '& .MuiDrawer-paper': {
+    width: '100%', // Genişliği ayarlayın, örneğin %100 ekran genişliği
+    height: '50%', // Yüksekliği ayarlayın, örneğin %50 ekran yüksekliği
+    borderTopLeftRadius: '16px',
+    borderTopRightRadius: '16px',
+    backgroundColor: '#fff', // Temanın gereksinimlerine göre ayarlayın
+    boxShadow: '0px -4px 12px rgba(0, 0, 0, 0.1)', // Gölge ekleyin
+  },
 };
