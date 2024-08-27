@@ -1,9 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import {
-  Box,
-  IconButton,
-  Drawer,
-} from "@mui/material";
+import { Box } from "@mui/material";
 import { useTheme } from "../context/ThemeContext";
 import Display from "./Display";
 import CalcBtn from "./Button";
@@ -16,7 +12,7 @@ import {
   buttons,
   operators,
 } from "../constants/constands";
-import Memory from "./Memory";
+import { HistoryDrawer } from "./HistoryDrawer";
 
 const Calculator = () => {
   const [display, setDisplay] = useState("0");
@@ -39,9 +35,20 @@ const Calculator = () => {
 
   const handlePercentageClick = useCallback(() => {
     try {
-      const result = (parseFloat(display) / 100).toString();
-      addOperationToMemory(`${display} % = ${result}`);
-      setDisplay(result);
+      if (!display) {
+        setDisplay("0");
+        return;
+      }
+
+      // Eğer sadece tek bir sayı varsa ve bu yüzde işareti değilse, yüzdelik hesapla
+      if (display.includes("%")) {
+        const expression = display.replace(/%/g, "/100");
+        const result = evaluateExpression(expression).toString();
+        setDisplay(result);
+        addOperationToMemory(`${display} = ${result}`);
+      } else {
+        setDisplay(display + "%");
+      }
     } catch (error) {
       setDisplay("Error");
     }
@@ -205,40 +212,14 @@ const Calculator = () => {
             />
           ))}
         </Box>
-        <Drawer
-          anchor="bottom"
-          open={drawerOpen}
-          onClose={handleDrawerClose}
-          sx={{
-            position: "fixed",
-            bottom: 0,
-            width: "450px",
-            zIndex: 1300,
-            "& .MuiDrawer-paper": {
-              width: "100%",
-              maxWidth: "460px",
-              borderTopLeftRadius: "8px",
-              borderTopRightRadius: "8px",
-              marginLeft: "520px",
-            },
-          }}
-        >
-          <Memory counOfMemort={counOfMemort}  operations={operations} setOperations={setOperations} />
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              p: 2,
-              backgroundColor: isDarkMode ? "#222" : "#f9f9f9",
-            }}
-          >
-            <IconButton
-              aria-label="history"
-              color="primary"
-              onClick={handleDrawerOpen}
-            ></IconButton>
-          </Box>
-        </Drawer>
+
+        <HistoryDrawer
+          setOperations={setOperations}
+          operations={operations}
+          counOfMemort={counOfMemort}
+          setDrawerOpen={setDrawerOpen}
+          drawerOpen={drawerOpen}
+        />
       </Box>
     </>
   );

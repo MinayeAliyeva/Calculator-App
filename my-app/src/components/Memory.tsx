@@ -78,15 +78,24 @@ const Memory = ({ operations, setOperations, counOfMemort }: MemoryProps) => {
               </IconButton>
             </ListItem>
           ))}
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+          <Box
+            onClick={deleteInsideDrawer}
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+             alignItems:"center",
+              mt: 2,
+              cursor: "pointer",
+            }}
+          >
             <IconButton
               aria-label="delete"
               color="error"
               disabled={isButtonDisabled}
-              onClick={deleteInsideDrawer}
             >
               <DeleteIcon />
             </IconButton>
+            <Typography>Delete all</Typography>
           </Box>
         </List>
       ) : (
