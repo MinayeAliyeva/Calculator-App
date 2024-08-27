@@ -21,7 +21,7 @@ export const evaluateExpression = (expression: string): number => {
       "*": (a, b) => a * b,
       "/": (a, b) => {
         if (b === 0) {
-          throw new Error("Sıfıra bölme hatası");
+          throw new Error("Error");
         }
         return a / b;
       },
@@ -50,6 +50,7 @@ export const evaluateExpression = (expression: string): number => {
         num = "";
         isNegative = false;
       }
+
       if (char === "-") {
         if (i === 0 || "+-*/(".includes(expression[i - 1])) {
           isNegative = true;
@@ -83,5 +84,6 @@ export const evaluateExpression = (expression: string): number => {
   if (isNaN(result) || !isFinite(result)) {
     throw new Error("Geçersiz sonuç");
   }
-  return Math.round(result * 1e10) / 1e10; //1usdu10
+
+  return Math.round(result * 1e10) / 1e10;
 };
