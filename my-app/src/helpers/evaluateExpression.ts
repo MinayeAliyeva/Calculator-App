@@ -1,3 +1,5 @@
+import { applyOperator } from "./applyOperator";
+
 export const evaluateExpression = (expression: string): number => {
   const operators: string[] = [];
   const values: number[] = [];
@@ -12,36 +14,6 @@ export const evaluateExpression = (expression: string): number => {
     "%": 2,
     "^": 3,
     "√": 4,
-  };
-
-  const applyOperator = (values: number[], operator: string) => {
-    if (operator === "√") {
-      const a = values.pop()!;
-      if (a < 0) {
-        throw new Error("Cannot take the square root of a negative number");
-      }
-      values.push(Math.sqrt(a));
-    } else if (operator === "^") {
-      const exponent = values.pop()!;
-      const base = values.pop()!;
-      values.push(Math.pow(base, exponent));
-    } else {
-      const b = values.pop()!;
-      const a = values.pop()!;
-      const operations: { [key: string]: (a: number, b: number) => number } = {
-        "+": (a, b) => a + b,
-        "-": (a, b) => a - b,
-        "*": (a, b) => a * b,
-        "/": (a, b) => {
-          if (b === 0) {
-            throw new Error("Cannot divide by zero");
-          }
-          return a / b;
-        },
-        "%": (a, b) => (a * b) / 100,
-      };
-      values.push(operations[operator](a, b));
-    }
   };
 
   const applyOperatorWithPrecedence = (minPrecedence: number) => {
@@ -68,13 +40,13 @@ export const evaluateExpression = (expression: string): number => {
   };
 
   for (let i = 0; i < expression.length; i++) {
+    //√25+6/2-3^2
     const char = expression[i];
 
     if ("0123456789.".includes(char)) {
       num += char;
     } else {
       parseNumber();
-
       if (char === "-") {
         if (i === 0 || "+-*/%√(".includes(expression[i - 1])) {
           isNegative = true;

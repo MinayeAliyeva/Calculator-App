@@ -14,7 +14,6 @@ const ThemeToggle = () => {
         borderRadius: "4px",
         cursor: "pointer",
         transition: "background-color 0.3s ease, color 0.3s ease",
-        margin: "20px",
         display: "flex",
         alignItems: "center",
       }}

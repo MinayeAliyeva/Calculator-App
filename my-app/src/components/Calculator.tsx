@@ -67,7 +67,7 @@ const Calculator = () => {
       setDisplay("Error");
     }
   }, [display, addOperationToMemory]);
-  
+
   const handlePowClick = useCallback(
     (exponent: number) => {
       try {
