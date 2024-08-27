@@ -14,6 +14,7 @@ const Display = ({ display, isDarkMode }: IDisplay) => {
         borderRadius: 1,
         mb: 2,
         transition: "background-color 0.3s ease",
+        overflow:"scroll"
       }}
     >
       {display || "0"}

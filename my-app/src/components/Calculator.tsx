@@ -49,33 +49,38 @@ const Calculator = () => {
       addOperationToMemory(`${display} % = ${result}`);
       setDisplay(result);
     } catch (error) {
-      setDisplay("Hata");
+      setDisplay("Error");
     }
   }, [display, addOperationToMemory]);
 
   const handleSquareRootClick = useCallback(() => {
     try {
+      if (!display) {
+        setDisplay("0");
+        return;
+      }
       const result = Math.sqrt(parseFloat(display)).toString();
       addOperationToMemory(`√${display} = ${result}`);
       setDisplay(result);
     } catch (error) {
-      setDisplay("Hata");
+      setDisplay("Error");
     }
   }, [display, addOperationToMemory]);
 
   const handlePowClick = useCallback(
     (exponent: number) => {
       try {
-        // if (!display) {
-        //   setDisplay("");
-        // }
+        if (!display) {
+          setDisplay("0");
+          return;
+        }
         const base = parseFloat(display);
         const poweredNum = Math.pow(base, exponent);
         const result = poweredNum.toString();
         addOperationToMemory(`${display} ^ ${exponent} = ${result}`);
         setDisplay(result);
       } catch (error) {
-        setDisplay("Hata");
+        setDisplay("Error");
       }
     },
     [display, addOperationToMemory]
@@ -89,10 +94,14 @@ const Calculator = () => {
         prev.lastIndexOf("*"),
         prev.lastIndexOf("/")
       );
-      // console.log("prev", prev);
-      // console.log("value", value);
+      console.log("prev", prev);
+      console.log("display", display);
 
       const lastNumber = prev.slice(lastOperatorIndex + 1); //+
+
+      if ((prev.slice(0, 1) === "0" || !prev) && value === "-") {
+        return value;
+      }
       // eger operator gelerse ve evvelki deyer sifir yada " " olarsa sifiri qoru
       if (operators?.includes(value) && (prev === "" || prev === "0")) {
         return `0${value}`;
@@ -129,19 +138,19 @@ const Calculator = () => {
   const handleEqual = useCallback(() => {
     try {
       if (display.includes("/0")) {
-        setDisplay("Hata");
+        setDisplay("Error");
         return;
       }
 
       const result = evaluateExpression(display);
       if (isNaN(result) || !isFinite(result)) {
-        setDisplay("Hata");
+        setDisplay("Error");
       } else {
         addOperationToMemory(`${display} = ${result}`);
         setDisplay(result.toString());
       }
     } catch {
-      setDisplay("Hata");
+      setDisplay("Error");
     }
   }, [display, addOperationToMemory]);
 
@@ -194,6 +203,7 @@ const Calculator = () => {
           paddingTop: 5,
           color: isDarkMode ? "#fff" : "#000",
           borderRadius: 2,
+          minWidth:"400px"
         }}
       >
         <Box sx={isDarkMode ? boxSxStyleDarkMood : boxSxStyleLightMood}>
