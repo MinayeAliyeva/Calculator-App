@@ -1,34 +1,32 @@
-import { useCallback, useState, useMemo } from "react";
-import CalcBtn from "./Button";
+import { useCallback, useMemo, useState } from "react";
 import {
   Box,
   IconButton,
   List,
   ListItem,
-  Modal,
+  Drawer,
   Typography,
 } from "@mui/material";
-import { evaluateExpression } from "../helpers/evaluateExpression";
+import DeleteIcon from "@mui/icons-material/Delete";
+import HistoryIcon from "@mui/icons-material/History";
 import { useTheme } from "../context/ThemeContext";
 import Display from "./Display";
-import HistoryIcon from "@mui/icons-material/History";
-import DeleteIcon from "@mui/icons-material/Delete";
-
+import CalcBtn from "./Button";
+import ThemeToggle from "./ThemeToogle";
+import { evaluateExpression } from "../helpers/evaluateExpression";
 import { HandlerKey, THandlers } from "../types/interface";
 import {
   boxSxStyleDarkMood,
   boxSxStyleLightMood,
   buttons,
-  modalStyle,
   operators,
 } from "../constants/constands";
-import ThemeToggle from "./ThemeToogle";
 
 const Calculator = () => {
   const [display, setDisplay] = useState("0");
   const [operations, setOperations] = useState<string[]>([]);
   const { isDarkMode } = useTheme();
-  const [open, setOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const addOperationToMemory = useCallback((operation: string) => {
     setOperations((prevOps) => [...prevOps, operation]);
@@ -94,36 +92,29 @@ const Calculator = () => {
         prev.lastIndexOf("*"),
         prev.lastIndexOf("/")
       );
-      console.log("prev", prev);
-      console.log("display", display);
 
-      const lastNumber = prev.slice(lastOperatorIndex + 1); //+
+      const lastNumber = prev.slice(lastOperatorIndex + 1);
 
       if ((prev.slice(0, 1) === "0" || !prev) && value === "-") {
         return value;
       }
-      // eger operator gelerse ve evvelki deyer sifir yada " " olarsa sifiri qoru
       if (operators?.includes(value) && (prev === "" || prev === "0")) {
         return `0${value}`;
       }
-      // Eğer 0-in uzerine gelen deyerdise ve . deyilse sifiri degisdir bu rakamla
       if (prev === "0" && !operators.includes(value) && value !== ".") {
         return value;
       }
-      // Eğer `value` "." ise ve önceki değer "" veya "0" ise, "0." ekle
       if (value === ".") {
         if (prev === "" || prev === "0") {
           return "0.";
         }
         if (lastNumber.includes(".")) {
-          return prev; // Eğer son rakamda zaten "." varsa değiştirme
+          return prev;
         }
       }
-      // Eğer işlem operatörü ekleniyorsa ve önceki karakter işlem operatörü ise, sonuncusunu değiştir
       if (operators?.includes(value) && operators.includes(prev.slice(-1))) {
         return prev.slice(0, -1) + value;
       }
-      // Eğer başında "." varsa, "0" ekleyin
       if (
         value === "." &&
         (prev === "" || operators.includes(prev.slice(-1)))
@@ -185,9 +176,9 @@ const Calculator = () => {
     [handlers, handleValueClick]
   );
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const deleteInsideModal = () => {
+  const handleDrawerOpen = () => setDrawerOpen(true);
+  const handleDrawerClose = () => setDrawerOpen(false);
+  const deleteInsideDrawer = () => {
     setOperations([]);
   };
 
@@ -198,16 +189,20 @@ const Calculator = () => {
       <ThemeToggle />
       <Box
         sx={{
-          width: 300,
+          width: 400, 
           margin: "auto",
           paddingTop: 5,
           color: isDarkMode ? "#fff" : "#000",
           borderRadius: 2,
-          minWidth:"400px"
+          position: "relative",
         }}
       >
         <Box sx={isDarkMode ? boxSxStyleDarkMood : boxSxStyleLightMood}>
-          <Display display={display} isDarkMode={isDarkMode} />
+          <Display
+            display={display}
+            isDarkMode={isDarkMode}
+            onHistoryClick={handleDrawerOpen}
+          />
           {buttons?.map((value: string) => (
             <CalcBtn
               onClick={() => handleClick(value)}
@@ -216,27 +211,39 @@ const Calculator = () => {
             />
           ))}
         </Box>
-        <Box
-          style={{ cursor: "pointer" }}
-          onClick={handleOpen}
-          sx={{ display: "flex" }}
+        <Drawer
+          anchor="bottom"
+          open={drawerOpen}
+          onClose={handleDrawerClose}
+          sx={{
+            position: "fixed",
+            bottom: 0,
+            width: "450px",
+            zIndex: 1300,
+            "& .MuiDrawer-paper": {
+              width: "100%",
+              maxWidth: "460px",
+              borderTopLeftRadius: "8px",
+              borderTopRightRadius: "8px",
+              marginLeft: "520px",
+            },
+          }}
         >
-          <HistoryIcon />
-          <Typography>View previous actions</Typography>
-        </Box>
-
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={modalStyle}>
-            <h1 style={{ fontSize: "15px" }}>Memory</h1>
+          <Box
+            sx={{
+              p: 2,
+              backgroundColor: isDarkMode ? "#222" : "#f9f9f9",
+              color: isDarkMode ? "#e0e0e0" : "#333",
+              height: "80vh",
+              overflowY: "auto",
+            }}
+          >
+            <Typography variant="h6" mb={2}>
+              Memory
+            </Typography>
             {operations.length > 0 ? (
               <List
                 sx={{
-                  mt: 2,
                   backgroundColor: isDarkMode ? "#222" : "#f9f9f9",
                   borderRadius: 2,
                   padding: 2,
@@ -261,26 +268,44 @@ const Calculator = () => {
                     {operation}
                   </ListItem>
                 ))}
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <Typography sx={{ fontSize: "13px" }}>
-                    Clear All Memory
-                  </Typography>
-
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
                   <IconButton
-                    onClick={deleteInsideModal}
                     aria-label="delete"
+                    color="error"
                     disabled={isButtonDisabled}
-                    style={{ color: "#E6A500" }}
+                    onClick={deleteInsideDrawer}
                   >
                     <DeleteIcon />
                   </IconButton>
                 </Box>
               </List>
             ) : (
-              <Typography>No previous operations</Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: isDarkMode ? "#e0e0e0" : "#333",
+                  textAlign: "center",
+                }}
+              >
+                No operations
+              </Typography>
             )}
           </Box>
-        </Modal>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              p: 2,
+              backgroundColor: isDarkMode ? "#222" : "#f9f9f9",
+            }}
+          >
+            <IconButton
+              aria-label="history"
+              color="primary"
+              onClick={handleDrawerOpen}
+            ></IconButton>
+          </Box>
+        </Drawer>
       </Box>
     </>
   );
