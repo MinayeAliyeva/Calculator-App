@@ -2,13 +2,8 @@ import { useCallback, useMemo, useState } from "react";
 import {
   Box,
   IconButton,
-  List,
-  ListItem,
   Drawer,
-  Typography,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import HistoryIcon from "@mui/icons-material/History";
 import { useTheme } from "../context/ThemeContext";
 import Display from "./Display";
 import CalcBtn from "./Button";
@@ -21,6 +16,7 @@ import {
   buttons,
   operators,
 } from "../constants/constands";
+import Memory from "./Memory";
 
 const Calculator = () => {
   const [display, setDisplay] = useState("0");
@@ -178,18 +174,15 @@ const Calculator = () => {
 
   const handleDrawerOpen = () => setDrawerOpen(true);
   const handleDrawerClose = () => setDrawerOpen(false);
-  const deleteInsideDrawer = () => {
-    setOperations([]);
-  };
 
-  const isButtonDisabled = operations.length === 0;
+  const counOfMemort = operations?.length;
 
   return (
     <>
       <ThemeToggle />
       <Box
         sx={{
-          width: 400, 
+          width: 400,
           margin: "auto",
           paddingTop: 5,
           color: isDarkMode ? "#fff" : "#000",
@@ -202,6 +195,7 @@ const Calculator = () => {
             display={display}
             isDarkMode={isDarkMode}
             onHistoryClick={handleDrawerOpen}
+            counOfMemory={counOfMemort}
           />
           {buttons?.map((value: string) => (
             <CalcBtn
@@ -229,68 +223,7 @@ const Calculator = () => {
             },
           }}
         >
-          <Box
-            sx={{
-              p: 2,
-              backgroundColor: isDarkMode ? "#222" : "#f9f9f9",
-              color: isDarkMode ? "#e0e0e0" : "#333",
-              height: "80vh",
-              overflowY: "auto",
-            }}
-          >
-            <Typography variant="h6" mb={2}>
-              Memory
-            </Typography>
-            {operations.length > 0 ? (
-              <List
-                sx={{
-                  backgroundColor: isDarkMode ? "#222" : "#f9f9f9",
-                  borderRadius: 2,
-                  padding: 2,
-                  color: isDarkMode ? "#e0e0e0" : "#333",
-                  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-                }}
-              >
-                {operations.map((operation, index) => (
-                  <ListItem
-                    key={index}
-                    sx={{
-                      borderRadius: 1,
-                      padding: "8px 12px",
-                      marginBottom: "8px",
-                      backgroundColor: isDarkMode ? "#444" : "#fff",
-                      transition: "background-color 0.3s ease",
-                      "&:hover": {
-                        backgroundColor: isDarkMode ? "#555" : "#eaeaea",
-                      },
-                    }}
-                  >
-                    {operation}
-                  </ListItem>
-                ))}
-                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-                  <IconButton
-                    aria-label="delete"
-                    color="error"
-                    disabled={isButtonDisabled}
-                    onClick={deleteInsideDrawer}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
-              </List>
-            ) : (
-              <Typography
-                variant="body1"
-                sx={{
-                  color: isDarkMode ? "#e0e0e0" : "#333",
-                  textAlign: "center",
-                }}
-              >
-                No operations
-              </Typography>
-            )}
-          </Box>
+          <Memory counOfMemort={counOfMemort}  operations={operations} setOperations={setOperations} />
           <Box
             sx={{
               display: "flex",

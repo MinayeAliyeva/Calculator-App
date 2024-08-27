@@ -1,10 +1,12 @@
 export interface IBtn {
   content: string;
   onClick: () => void;
+
 }
 export interface IDisplay {
   display: string;
   isDarkMode: boolean;
+  counOfMemory: number;
 }
 
 export interface IMemory {

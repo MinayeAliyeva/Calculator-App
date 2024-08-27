@@ -6,6 +6,7 @@ const Display = ({
   display,
   isDarkMode,
   onHistoryClick,
+  counOfMemory,
 }: IDisplay & { onHistoryClick: () => void }) => {
   return (
     <Box
@@ -24,7 +25,10 @@ const Display = ({
         alignItems: "center",
       }}
     >
-      <HistoryIcon onClick={onHistoryClick} style={{ cursor: "pointer" }} />
+
+        <HistoryIcon onClick={onHistoryClick} style={{ cursor: "pointer" }} />
+     
+ 
       {display || "0"}
     </Box>
   );
