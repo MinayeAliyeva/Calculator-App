@@ -83,11 +83,12 @@ const Memory = ({ operations, setOperations, counOfMemort }: MemoryProps) => {
             sx={{
               display: "flex",
               justifyContent: "flex-end",
-             alignItems:"center",
+              alignItems: "center",
               mt: 2,
               cursor: "pointer",
             }}
           >
+            <Typography>Delete all</Typography>
             <IconButton
               aria-label="delete"
               color="error"
@@ -95,7 +96,6 @@ const Memory = ({ operations, setOperations, counOfMemort }: MemoryProps) => {
             >
               <DeleteIcon />
             </IconButton>
-            <Typography>Delete all</Typography>
           </Box>
         </List>
       ) : (
