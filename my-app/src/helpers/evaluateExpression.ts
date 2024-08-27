@@ -99,7 +99,15 @@ export const evaluateExpression = (expression: string): number => {
         }
         operators.pop();
       } else if (char === "%") {
+        applyOperatorWithPrecedence(2);
         operators.push(char);
+      } else if (char === "√") {
+        if (i === 0 || "+-*/%(".includes(expression[i - 1])) {
+          operators.push(char);
+        } else {
+          applyOperatorWithPrecedence(4);
+          operators.push(char);
+        }
       }
     }
   }
@@ -107,10 +115,9 @@ export const evaluateExpression = (expression: string): number => {
   parseNumber();
   handleOperators();
 
-  const result = values.pop()!;
-  if (isNaN(result) || !isFinite(result)) {
-    throw new Error("Invalid result");
+  if (values.length !== 1) {
+    throw new Error("Invalid expression");
   }
 
-  return Math.round(result * 1e10) / 1e10;
+  return values[0];
 };

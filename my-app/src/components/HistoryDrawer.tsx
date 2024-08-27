@@ -1,4 +1,3 @@
-
 import Memory from "./Memory";
 import { Box, Drawer, IconButton } from "@mui/material";
 import { useTheme } from "../context/ThemeContext";
@@ -14,6 +13,7 @@ export const HistoryDrawer = ({
   const handleDrawerOpen = () => setDrawerOpen(true);
   const handleDrawerClose = () => setDrawerOpen(false);
   const { isDarkMode } = useTheme();
+
   return (
     <Drawer
       anchor="bottom"
@@ -22,14 +22,24 @@ export const HistoryDrawer = ({
       sx={{
         position: "fixed",
         bottom: 0,
-        width: "450px",
+        width: "100%",
+        maxWidth: "450px",
         zIndex: 1300,
         "& .MuiDrawer-paper": {
           width: "100%",
-          maxWidth: "460px",
+          maxWidth: "490px",
           borderTopLeftRadius: "8px",
           borderTopRightRadius: "8px",
-          marginLeft: "520px",
+          marginLeft: "auto",
+          marginRight: "auto",
+          boxShadow: "0 -2px 6px rgba(0, 0, 0, 0.2)",
+        },
+        "@media (max-width: 600px)": {
+          "& .MuiDrawer-paper": {
+            maxWidth: "100%",
+            borderTopLeftRadius: 0,
+            borderTopRightRadius: 0,
+          },
         },
       }}
     >
@@ -56,4 +66,4 @@ export const HistoryDrawer = ({
   );
 };
 
-export default Drawer;
+export default HistoryDrawer;

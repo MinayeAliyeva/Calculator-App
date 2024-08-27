@@ -25,25 +25,24 @@ const Calculator = () => {
   }, []);
 
   const handleClearClick = useCallback(() => {
-    setDisplay((prev) => prev.slice(0, -1));
+    setDisplay((prev) => prev.slice(0, -1) || "0");
   }, []);
 
   const handleAllClearClick = useCallback(() => {
-    setDisplay("");
+    setDisplay("0");
     setOperations([]);
   }, []);
 
   const handlePercentageClick = useCallback(() => {
     try {
-      if (!display) {
+      if (!display || display === "0") {
         setDisplay("0");
         return;
       }
 
-      // Eğer sadece tek bir sayı varsa ve bu yüzde işareti değilse, yüzdelik hesapla
       if (display.includes("%")) {
-        const expression = display.replace(/%/g, "/100");
-        const result = evaluateExpression(expression).toString();
+        let expression = display.slice(0, -1);
+        const result = evaluateExpression(`${expression}/100`).toString();
         setDisplay(result);
         addOperationToMemory(`${display} = ${result}`);
       } else {
@@ -56,30 +55,26 @@ const Calculator = () => {
 
   const handleSquareRootClick = useCallback(() => {
     try {
-      if (!display) {
-        setDisplay("0");
+      if (display === "0" || display === "") {
+        setDisplay("√");
         return;
       }
-      const result = Math.sqrt(parseFloat(display)).toString();
-      addOperationToMemory(`√${display} = ${result}`);
-      setDisplay(result);
+      const expression = `√(${display})`;
+      const evaluated = evaluateExpression(expression);
+      setDisplay(`${expression} = ${evaluated}`);
+      addOperationToMemory(`${expression} = ${evaluated}`);
     } catch (error) {
       setDisplay("Error");
     }
   }, [display, addOperationToMemory]);
-
+  
   const handlePowClick = useCallback(
     (exponent: number) => {
       try {
-        if (!display) {
-          setDisplay("0");
-          return;
-        }
-        const base = parseFloat(display);
-        const poweredNum = Math.pow(base, exponent);
-        const result = poweredNum.toString();
-        addOperationToMemory(`${display} ^ ${exponent} = ${result}`);
-        setDisplay(result);
+        const result = `${display}^${exponent}`;
+        const evaluated = evaluateExpression(result);
+        setDisplay(evaluated.toString());
+        addOperationToMemory(`${result} = ${evaluated}`);
       } catch (error) {
         setDisplay("Error");
       }
@@ -95,18 +90,24 @@ const Calculator = () => {
         prev.lastIndexOf("*"),
         prev.lastIndexOf("/")
       );
-
       const lastNumber = prev.slice(lastOperatorIndex + 1);
 
-      if ((prev.slice(0, 1) === "0" || !prev) && value === "-") {
+      if (value === "√") {
+        return prev ? `√(${prev})` : "√";
+      }
+
+      if ((prev === "0" || prev === "") && value === "-") {
         return value;
       }
-      if (operators?.includes(value) && (prev === "" || prev === "0")) {
+
+      if (operators.includes(value) && (prev === "" || prev === "0")) {
         return `0${value}`;
       }
+
       if (prev === "0" && !operators.includes(value) && value !== ".") {
         return value;
       }
+
       if (value === ".") {
         if (prev === "" || prev === "0") {
           return "0.";
@@ -115,14 +116,20 @@ const Calculator = () => {
           return prev;
         }
       }
-      if (operators?.includes(value) && operators.includes(prev.slice(-1))) {
+
+      if (operators.includes(value) && operators.includes(prev.slice(-1))) {
         return prev.slice(0, -1) + value;
       }
+
       if (
         value === "." &&
         (prev === "" || operators.includes(prev.slice(-1)))
       ) {
         return prev + "0.";
+      }
+
+      if (prev.startsWith("√") && value !== "√") {
+        return prev + value;
       }
 
       return prev + value;
@@ -180,9 +187,8 @@ const Calculator = () => {
   );
 
   const handleDrawerOpen = () => setDrawerOpen(true);
-  const handleDrawerClose = () => setDrawerOpen(false);
 
-  const counOfMemort = operations?.length;
+  const counOfMemort = operations.length;
 
   return (
     <>
@@ -204,7 +210,7 @@ const Calculator = () => {
             onHistoryClick={handleDrawerOpen}
             counOfMemory={counOfMemort}
           />
-          {buttons?.map((value: string) => (
+          {buttons.map((value: string) => (
             <CalcBtn
               onClick={() => handleClick(value)}
               key={value}
