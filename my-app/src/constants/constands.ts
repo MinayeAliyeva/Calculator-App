@@ -57,11 +57,11 @@ export const modalStyle = {
 };
 export const drawerStyle = {
   '& .MuiDrawer-paper': {
-    width: '100%', // Genişliği ayarlayın, örneğin %100 ekran genişliği
-    height: '50%', // Yüksekliği ayarlayın, örneğin %50 ekran yüksekliği
+    width: '100%', 
+    height: '50%', 
     borderTopLeftRadius: '16px',
     borderTopRightRadius: '16px',
-    backgroundColor: '#fff', // Temanın gereksinimlerine göre ayarlayın
-    boxShadow: '0px -4px 12px rgba(0, 0, 0, 0.1)', // Gölge ekleyin
+    backgroundColor: '#fff', 
+    boxShadow: '0px -4px 12px rgba(0, 0, 0, 0.1)', 
   },
 };

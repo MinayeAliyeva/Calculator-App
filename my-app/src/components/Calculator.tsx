@@ -54,13 +54,21 @@ const Calculator = () => {
   }, [display, addOperationToMemory]);
 
   const handleSquareRootClick = useCallback(() => {
+    console.log("display", display);
     try {
       if (display === "0" || display === "") {
         setDisplay("√");
         return;
       }
-      const expression = `√(${display})`;
+      
+      const expression = `√(${display})`; //2+√==>√(2+) Err
+      console.log("expression", expression);
       const evaluated = evaluateExpression(expression);
+      console.log("evaluated", evaluated);
+      console.log(
+        "${expression} = ${evaluated}`);",
+        `${expression} = ${evaluated}`
+      );
       setDisplay(`${expression} = ${evaluated}`);
       addOperationToMemory(`${expression} = ${evaluated}`);
     } catch (error) {
@@ -91,6 +99,8 @@ const Calculator = () => {
         prev.lastIndexOf("/")
       );
       const lastNumber = prev.slice(lastOperatorIndex + 1);
+      console.log("prev", prev);
+      console.log("value", value);
 
       if (value === "√") {
         return prev ? `√(${prev})` : "√";
@@ -130,6 +140,8 @@ const Calculator = () => {
 
       if (prev.startsWith("√") && value !== "√") {
         return prev + value;
+      } else {
+        console.log("ok");
       }
 
       return prev + value;
@@ -210,7 +222,7 @@ const Calculator = () => {
             onHistoryClick={handleDrawerOpen}
             counOfMemory={counOfMemort}
           />
-          {buttons.map((value: string) => (
+          {buttons?.map((value: string) => (
             <CalcBtn
               onClick={() => handleClick(value)}
               key={value}

@@ -7,7 +7,6 @@ const ThemeToggle = () => {
   return (
     <div
       style={{
-        marginTop: "0rem",
         color: isDarkMode ? "#fff" : "#000",
         border: "none",
         padding: "8px 16px",
